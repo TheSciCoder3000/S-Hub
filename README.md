@@ -1,6 +1,6 @@
-# s_hub
+# Schoolbook Hub
 
-A new Flutter project.
+A modified app for our Schoolbook.
 
 ## Getting Started
 
