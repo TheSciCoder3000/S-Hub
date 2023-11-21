@@ -1,10 +1,9 @@
+
+import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:icalendar_parser/icalendar_parser.dart';
-
-import 'package:flutter_file_downloader/flutter_file_downloader.dart';
-
-
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,6 +61,8 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+String ICAL = "EMPTY";
+
 class _MyHomePageState extends State<MyHomePage> {
 
   final myController = TextEditingController();
@@ -69,15 +70,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-  // final icsObj = ICalendar.fromLines(File('assets/my_file.ics').readAsLinesSync());
-
   @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    myController.dispose();
-    super.dispose();
-  }
+  void setCalendar() async {
 
+    // var path = "/Links/ICAL.ics";
+    // var dir = (await getApplicationDocumentsDirectory()).path;
+    var path = "/storage/emulated/0/Download/ICAL.ics";
+    var file = File(path);
+    var res = await get(Uri.parse(myController.text));
+
+    file.writeAsBytes(res.bodyBytes);
+
+    final icsObj = ICalendar.fromLines( await File('/storage/emulated/0/Download/ICAL.ics').readAsLines());
+
+    ICAL = jsonEncode(icsObj.toJson());
+    print(jsonEncode(icsObj.toJson()));
+  }
+  
   @override
   Widget build(BuildContext context) {
 
@@ -104,12 +113,16 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Text(ICAL),
+              ),
+            ),
             Card(
               child: Column(
                 children: [
-                  // Text(
-                  //   String:
-                  // ),
+
                   TextField(
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
@@ -120,10 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ElevatedButton(
                     onPressed: () {
                       setState((){
-                        FileDownloader.downloadFile(
-                          url: myController.text.trim(),
-                          downloadDestination: DownloadDestinations.appFiles,
-                        );
+                        setCalendar();
                       });
                     },
                     child: const Text('Submit'),
@@ -139,3 +149,5 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+
