@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "983082341576",
+    "project_id": "schoolbook-hub",
+    "storage_bucket": "schoolbook-hub.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983082341576:android:8a22dfdfeea5a4687601fd",
+        "android_client_info": {
+          "package_name": "com.example.s_hub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJNI_bfgX1S6sDqNJkNjGckbOQPgoDOW4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

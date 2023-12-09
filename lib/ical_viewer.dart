@@ -3,6 +3,7 @@ import 'package:icalendar_parser/icalendar_parser.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
 class ICalViewer extends StatefulWidget {
   const ICalViewer({super.key});
@@ -21,18 +22,26 @@ class _ICalViewerState extends State<ICalViewer> {
   @override
   void setCalendar() async {
 
-    // var path = "/Links/ICAL.ics";
-    // var dir = (await getApplicationDocumentsDirectory()).path;
-    var path = "/storage/emulated/0/Download/ICAL.ics";
-    var file = File(path);
-    var res = await get(Uri.parse(myController.text));
+    try {
+      final response = await http.get(Uri.parse(myController.text));
 
-    file.writeAsBytes(res.bodyBytes);
+      if (response.statusCode == 200) {
+        final List<String> lines = LineSplitter.split(utf8.decode(response.bodyBytes)).toList();
 
-    final icsObj = ICalendar.fromLines( await File('/storage/emulated/0/Download/ICAL.ics').readAsLines());
+        // Now 'lines' contains a list of strings, where each string represents a line from the URL content
+        final icsObj = ICalendar.fromLines(lines);
 
-    ICAL = jsonEncode(icsObj.toJson());
-    print(jsonEncode(icsObj.toJson()));
+        ICAL = jsonEncode(icsObj.toJson());
+        for (var dat in icsObj.data) {
+          print(dat);
+        }
+        
+      } else {
+        print('Failed to load data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
   
   @override
