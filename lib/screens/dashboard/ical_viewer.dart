@@ -24,12 +24,16 @@ class _ICalViewerState extends State<ICalViewer> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
 
+
   @override
   void initState() {
     super.initState();
 
-    _selectedDay = _focusedDay;
+    setCalendar();
+
+    _selectedDay = DateTime(kToday.year, kToday.month , kToday.day);
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+
   }
 
   @override
@@ -87,6 +91,7 @@ class _ICalViewerState extends State<ICalViewer> {
   
   @override
   Widget build(BuildContext context) {
+    setState(() {});
     return Scaffold(
 
       body: Column(

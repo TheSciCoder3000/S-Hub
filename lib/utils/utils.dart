@@ -17,8 +17,16 @@ class Event {
   String toString() => title;
 }
 
-String ICAL = "EMPTY";
-String iCalLink = "Insert ICal Link";
+int getHashCode(DateTime key) {
+  return key.day * 1000000 + key.month * 10000 + key.year;
+}
+
+final kEvents = LinkedHashMap<DateTime, List<Event>>(
+  equals: isSameDay,
+  hashCode: getHashCode,
+);
+
+bool loaded = false;
 
 void setCalendar() async {
 
@@ -29,12 +37,29 @@ void setCalendar() async {
       final List<String> lines = LineSplitter.split(utf8.decode(response.bodyBytes)).toList();
 
       // Now 'lines' contains a list of strings, where each string represents a line from the URL content
-      final icsObj = ICalendar.fromLines(lines);
 
-      ICAL = jsonEncode(icsObj.toJson());
-      for (var dat in icsObj.data) {
-        print(dat);
+      final ICAL = ICalendar.fromLines(lines);
+
+      for (var dat in ICAL.data) {
+
+        if (dat['type'] == 'VEVENT') {
+          DateTime date = DateTime.parse(dat['dtend'].dt);
+
+          // print(dat['dtend'].hashCode);
+          // print(date);
+          kEvents.addAll(
+              {
+                date: [
+                  Event(dat['summary'])
+                ],
+              }
+          );
+
+          // print(kEvents);
+        }
       }
+
+      // print(ICAL);
 
     } else {
       print('Failed to load data. Status code: ${response.statusCode}');
@@ -42,27 +67,41 @@ void setCalendar() async {
   } catch (e) {
     print('Error: $e');
   }
+
+  loaded = true;
+
 }
 
 /// Example events.
 ///
 /// Using a [LinkedHashMap] is highly recommended if you decide to use a map.
-final kEvents = LinkedHashMap<DateTime, List<Event>>(
-  equals: isSameDay,
-  hashCode: getHashCode,
-)..addAll(
-    {
-      kToday: [
-        Event('Today\'s Event 1'),
-        Event('Today\'s Event 2'),
-      ],
-    }
-);
 
 
-int getHashCode(DateTime key) {
-  return key.day * 1000000 + key.month * 10000 + key.year;
-}
+// void parseICAL() {
+//   Map<String, dynamic> myMap = json.decode(ICAL);
+//   List<dynamic> data = myMap["data"];
+//   data.forEach((data) {
+//     (data as Map<String, dynamic>).forEach((key, value) {
+//       if (value["type"] == "VEVENT") {
+//         if (kEvents.containsKey(value["dtend"]["dt"])) {
+//           kEvents.update(value["dtend"]["IcsDateTime"]["dt"], (v) =>
+//               value["dtend"]["IcsDateTime"]["dt"].add(Event(value["summary"])));
+//         } else {
+//           kEvents.addAll(
+//               {
+//                 value["dtend"]["IcsDateTime"]["dt"]: [
+//                   Event(value["summary"])
+//                 ],
+//               }
+//           );
+//         }
+//
+//         print('${value["type"]} | ${value["dtend"]["IcsDateTime"]["dt"]} | ${value["summary"]}');
+//       }
+//     });
+//   });
+// }
+
 
 /// Returns a list of [DateTime] objects from [first] to [last], inclusive.
 List<DateTime> daysInRange(DateTime first, DateTime last) {
