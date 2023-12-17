@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:s_hub/firebase_options.dart';
-import 'package:s_hub/ical_viewer.dart';
+import 'package:s_hub/screens/dashboard/ical_viewer.dart';
 import 'package:s_hub/screens/auth/signin.dart';
 import 'package:s_hub/screens/auth/register.dart';
 import 'package:s_hub/screens/dashboard/index.dart';
@@ -31,11 +31,11 @@ class MyApp extends StatelessWidget {
       initialData: null,
       child: MaterialApp(
         title: 'Flutter Demo',
-        initialRoute: '/auth',
+        initialRoute: '/dashboard',
         routes: {
           '/auth': (context) => const AuthPage(),    // edit this to point to a page
           '/register': (context) => const RegisterPage(),
-          '/dashboard': (context) => const Dashboard()
+          '/dashboard': (context) => const ICalViewer()
         },
       ),
     );
