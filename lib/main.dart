@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:s_hub/firebase_options.dart';
-import 'package:s_hub/ical_viewer.dart';
 import 'package:s_hub/screens/auth/signin.dart';
 import 'package:s_hub/screens/auth/register.dart';
 import 'package:s_hub/screens/dashboard/index.dart';
