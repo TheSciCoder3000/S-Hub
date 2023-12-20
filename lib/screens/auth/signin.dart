@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:s_hub/models/user.dart';
 import 'package:s_hub/screens/auth/auth_field.dart';
-import 'package:s_hub/screens/auth/custom_painter.dart';
 import 'package:s_hub/utils/firebase/auth.dart';
 
 class AuthPage extends StatefulWidget {
@@ -61,14 +60,21 @@ class _AuthPageState extends State<AuthPage> {
     return Scaffold(
       body: Stack(
         children: [
-          Positioned(
-            left: 0,
-            top: 0,
-            width: width,
-            height: height,
-            child: CustomPaint(
-              size: Size(width, height*1.2), //You can Replace [WIDTH] with your desired width for Custom Paint and height will be calculated automatically
-              painter: RPSCustomPainter(),
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                colors: [Color(0xff1a1b1b), Color(0xFF1F3221)],
+              )
+            )
+          ),
+          const Positioned(
+            bottom: 0,
+            height: 270,
+            child: Image(
+              image: AssetImage("assets/waves.png"),
             ),
           ),
           SingleChildScrollView(
@@ -86,22 +92,18 @@ class _AuthPageState extends State<AuthPage> {
                     children: [
                       Column(
                         children: [
-                          const SizedBox(height: 50.0),
-                          const Text(
-                            "Log In",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 28.0,
-                              color: Colors.white
+                          const SizedBox(
+                            height: 180,
+                            child: Image(
+                              image: AssetImage("assets/logo.png"),
                             ),
                           ),
-                          const SizedBox(height: 80.0),
+                          const SizedBox(height: 50.0),
                           AuthField(
                             hintText: "Email",
                             onChange: (value) => setState(() { email = value; }),
                             errorMsg: errorEmail,
                           ),
-                          const SizedBox(height: 10.0),
                           AuthField(
                             hintText: "password",
                             onChange: (value) => setState(() { password = value; }),
@@ -109,16 +111,27 @@ class _AuthPageState extends State<AuthPage> {
                             obscureText: true,
                             icon: Icons.key,
                           ),
-                          const SizedBox(height: 50.0),
-                          ElevatedButton(
-                            onPressed: signingIn ? null : signinUser,
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0)
+                          const SizedBox(height: 40.0),
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                begin: Alignment.centerLeft, end: Alignment.centerRight,
+                                colors: [Color.fromARGB(255, 13, 228, 109), Color.fromARGB(255, 6, 214, 169)],
                               ),
-                              minimumSize: const Size(double.infinity, 45.0)
+                              borderRadius: BorderRadius.circular(30.0)
                             ),
-                            child: const Text("Sign In"),
+                            child: ElevatedButton(
+                              onPressed: signingIn ? null : signinUser,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0)
+                                ),
+                                minimumSize: const Size(double.infinity, 45.0)
+                              ),
+                              child: const Text("Sign In"),
+                            ),
                           ),
                         ],
                       ),
@@ -127,6 +140,9 @@ class _AuthPageState extends State<AuthPage> {
                         children: [
                           const Text("don't have an account? "),
                           TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color.fromARGB(255, 0, 242, 206)
+                            ),
                             onPressed: () => redirectToRegister(context), 
                             child: const Text("register now")
                           )
