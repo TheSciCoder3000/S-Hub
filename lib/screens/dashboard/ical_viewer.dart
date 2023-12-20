@@ -29,11 +29,14 @@ class _ICalViewerState extends State<ICalViewer> {
   void initState() {
     super.initState();
 
-    setCalendar();
+    callSetCalendar();
 
     _selectedDay = DateTime(kToday.year, kToday.month , kToday.day);
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+  }
 
+  callSetCalendar() async {
+    await setCalendar();
   }
 
   @override
@@ -95,6 +98,7 @@ class _ICalViewerState extends State<ICalViewer> {
     return Scaffold(
 
       body: Column(
+
         children: [
           const SizedBox(height: 30,width: 1,),
           TableCalendar<Event>(
@@ -108,10 +112,24 @@ class _ICalViewerState extends State<ICalViewer> {
             rangeSelectionMode: _rangeSelectionMode,
             eventLoader: _getEventsForDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
-            calendarStyle: CalendarStyle(
+            calendarStyle: const CalendarStyle(
               // Use `CalendarStyle` to customize the UI
               outsideDaysVisible: false,
+              defaultTextStyle: TextStyle(color: Colors.white),
+              weekendTextStyle: TextStyle(color: Colors.white),
+              weekNumberTextStyle: TextStyle(color: Colors.white),
+              markerDecoration: BoxDecoration(color: Colors.greenAccent, shape: BoxShape.circle),
+              todayDecoration: BoxDecoration(color: Colors.white38, shape: BoxShape.circle),
+              selectedDecoration: BoxDecoration(color: Colors.white54, shape: BoxShape.circle),
+
             ),
+            headerStyle: const HeaderStyle(
+                formatButtonVisible: false,
+                titleTextStyle: TextStyle(color: Colors.white),
+                leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
+                rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white)
+            ),
+            daysOfWeekStyle: const DaysOfWeekStyle(weekdayStyle: TextStyle(color: Colors.white), weekendStyle: TextStyle(color: Colors.white)),
             onDaySelected: _onDaySelected,
             onRangeSelected: _onRangeSelected,
             onFormatChanged: (format) {
@@ -139,12 +157,12 @@ class _ICalViewerState extends State<ICalViewer> {
                         vertical: 4.0,
                       ),
                       decoration: BoxDecoration(
-                        border: Border.all(),
+                        border: Border.all(color: Colors.white),
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: ListTile(
                         onTap: () => print('${value[index]}'),
-                        title: Text('${value[index]}'),
+                        title: Text('${value[index]}', style: TextStyle(color: Colors.white),),
                       ),
                     );
                   },
@@ -189,27 +207,27 @@ class _CalendarHeader extends StatelessWidget {
             width: 120.0,
             child: Text(
               headerText,
-              style: TextStyle(fontSize: 26.0),
+              style: const TextStyle(fontSize: 26.0, color: Colors.white),
             ),
           ),
           IconButton(
-            icon: Icon(Icons.calendar_today, size: 20.0),
+            icon: Icon(Icons.calendar_today, size: 20.0, color: Colors.white),
             visualDensity: VisualDensity.compact,
             onPressed: onTodayButtonTap,
           ),
           if (clearButtonVisible)
             IconButton(
-              icon: Icon(Icons.clear, size: 20.0),
+              icon: Icon(Icons.clear, size: 20.0, color: Colors.white),
               visualDensity: VisualDensity.compact,
               onPressed: onClearButtonTap,
             ),
           const Spacer(),
           IconButton(
-            icon: Icon(Icons.chevron_left),
+            icon: Icon(Icons.chevron_left, color: Colors.white),
             onPressed: onLeftArrowTap,
           ),
           IconButton(
-            icon: Icon(Icons.chevron_right),
+            icon: Icon(Icons.chevron_right, color: Colors.white),
             onPressed: onRightArrowTap,
           ),
         ],

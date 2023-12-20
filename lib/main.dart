@@ -32,11 +32,13 @@ class MyApp extends StatelessWidget {
       initialData: null,
       child: MaterialApp(
         title: 'Flutter Demo',
-        initialRoute: '/dashboard',
+        initialRoute: '/calendar',
+        theme: ThemeData(scaffoldBackgroundColor: const Color.fromARGB(0, 33, 149, 243)),
         routes: {
           '/auth': (context) => const AuthPage(),    // edit this to point to a page
           '/register': (context) => const RegisterPage(),
-          '/dashboard': (context) => const ICalViewer()
+          '/dashboard': (context) => const Dashboard(),
+          '/calendar': (context) => const ICalViewer(),
         },
       ),
     );

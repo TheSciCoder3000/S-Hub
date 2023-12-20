@@ -26,9 +26,8 @@ final kEvents = LinkedHashMap<DateTime, List<Event>>(
   hashCode: getHashCode,
 );
 
-bool loaded = false;
 
-void setCalendar() async {
+setCalendar() async{
 
   try {
     final response = await http.get(Uri.parse("https://dlsud.edu20.org/my_calendar/ical/calendar.ics?code=6289cbd05d12cd160876e768ee36203a3435f79f&user_id=9220986"));
@@ -39,7 +38,6 @@ void setCalendar() async {
       // Now 'lines' contains a list of strings, where each string represents a line from the URL content
 
       final ICAL = ICalendar.fromLines(lines);
-
       for (var dat in ICAL.data) {
 
         if (dat['type'] == 'VEVENT') {
@@ -47,18 +45,22 @@ void setCalendar() async {
 
           // print(dat['dtend'].hashCode);
           // print(date);
-          kEvents.addAll(
-              {
-                date: [
-                  Event(dat['summary'])
-                ],
-              }
-          );
-
+          
+          if (kEvents.containsKey(date)) {
+            kEvents[date]?.add(Event(dat['summary']));
+          } else {
+            kEvents.addAll(
+                {
+                  date: [
+                    Event(dat['summary'])
+                  ],
+                }
+            );
+          }
+          
           // print(kEvents);
         }
       }
-
       // print(ICAL);
 
     } else {
@@ -68,9 +70,8 @@ void setCalendar() async {
     print('Error: $e');
   }
 
-  loaded = true;
-
 }
+
 
 /// Example events.
 ///
