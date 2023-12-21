@@ -5,8 +5,11 @@ class Dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(automaticallyImplyLeading: false, title: const Text("Dashboard"),),
+    return const SafeArea(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
+        child: Text("Dashboard", style: TextStyle(color: Colors.white, fontSize: 30.0),),
+      ),
     );
   }
 }
