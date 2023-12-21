@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/intl.dart';
 import 'package:s_hub/utils/utils.dart';
+import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
+import 'dart:async';
 
 class ICalViewer extends StatefulWidget {
   const ICalViewer({super.key});
@@ -14,6 +15,7 @@ class ICalViewer extends StatefulWidget {
 class _ICalViewerState extends State<ICalViewer> {
 
   final myController = TextEditingController();
+  bool initialized = false;
 
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -24,19 +26,24 @@ class _ICalViewerState extends State<ICalViewer> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
 
+  _ICalViewerState() {
+    setCalendar();
+    Future.delayed(const Duration(seconds: 10), () {
+      setState(() {
+        _selectedDay = DateTime(kToday.year, kToday.month , kToday.day);
+        _selectedEvents.value = _getEventsForDay(_selectedDay!);
+
+      });
+    });
+  }
 
   @override
   void initState() {
     super.initState();
 
-    callSetCalendar();
-
     _selectedDay = DateTime(kToday.year, kToday.month , kToday.day);
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
-  }
 
-  callSetCalendar() async {
-    await setCalendar();
   }
 
   @override
@@ -67,6 +74,7 @@ class _ICalViewerState extends State<ICalViewer> {
         _rangeStart = null; // Important to clean those
         _rangeEnd = null;
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
+        print("pressed");
       });
 
       _selectedEvents.value = _getEventsForDay(selectedDay);
@@ -91,15 +99,31 @@ class _ICalViewerState extends State<ICalViewer> {
       _selectedEvents.value = _getEventsForDay(end);
     }
   }
-  
+
   @override
+
   Widget build(BuildContext context) {
-    setState(() {});
+
+    // LOADING SCREEN
+    if (initialized == false) {
+      Loader.show(
+        context,
+        progressIndicator: const CircularProgressIndicator(backgroundColor: Color.fromARGB(0, 33, 149, 243), color: Colors.greenAccent,),
+        overlayColor: Colors.black26,
+      );
+
+      Future.delayed(const Duration(seconds: 10), () {
+        Loader.hide();
+      });
+      initialized = true;
+    }
+
     return Scaffold(
 
-      body: Column(
+      body:Column(
 
         children: [
+
           const SizedBox(height: 30,width: 1,),
           TableCalendar<Event>(
             firstDay: kFirstDay,
@@ -172,69 +196,11 @@ class _ICalViewerState extends State<ICalViewer> {
           ),
         ],
       ),
+
     );
   }
 }
 
-class _CalendarHeader extends StatelessWidget {
-  final DateTime focusedDay;
-  final VoidCallback onLeftArrowTap;
-  final VoidCallback onRightArrowTap;
-  final VoidCallback onTodayButtonTap;
-  final VoidCallback onClearButtonTap;
-  final bool clearButtonVisible;
-
-  const _CalendarHeader({
-    Key? key,
-    required this.focusedDay,
-    required this.onLeftArrowTap,
-    required this.onRightArrowTap,
-    required this.onTodayButtonTap,
-    required this.onClearButtonTap,
-    required this.clearButtonVisible,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final headerText = DateFormat.yMMM().format(focusedDay);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          const SizedBox(width: 16.0),
-          SizedBox(
-            width: 120.0,
-            child: Text(
-              headerText,
-              style: const TextStyle(fontSize: 26.0, color: Colors.white),
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.calendar_today, size: 20.0, color: Colors.white),
-            visualDensity: VisualDensity.compact,
-            onPressed: onTodayButtonTap,
-          ),
-          if (clearButtonVisible)
-            IconButton(
-              icon: Icon(Icons.clear, size: 20.0, color: Colors.white),
-              visualDensity: VisualDensity.compact,
-              onPressed: onClearButtonTap,
-            ),
-          const Spacer(),
-          IconButton(
-            icon: Icon(Icons.chevron_left, color: Colors.white),
-            onPressed: onLeftArrowTap,
-          ),
-          IconButton(
-            icon: Icon(Icons.chevron_right, color: Colors.white),
-            onPressed: onRightArrowTap,
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 // prototype calendar generator. Used package instead
 
