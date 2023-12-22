@@ -4,10 +4,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:s_hub/firebase_options.dart';
-import 'package:s_hub/screens/dashboard/ical_viewer.dart';
 import 'package:s_hub/screens/auth/signin.dart';
 import 'package:s_hub/screens/auth/register.dart';
-import 'package:s_hub/screens/dashboard/index.dart';
+import 'package:s_hub/screens/wrapper.dart';
 import 'package:s_hub/utils/firebase/auth.dart';
 
 void main() async{
@@ -32,13 +31,14 @@ class MyApp extends StatelessWidget {
       initialData: null,
       child: MaterialApp(
         title: 'Flutter Demo',
-        initialRoute: '/calendar',
-        theme: ThemeData(scaffoldBackgroundColor: const Color.fromARGB(0, 33, 149, 243)),
+        initialRoute: '/',
+        theme: ThemeData(
+          scaffoldBackgroundColor: const Color.fromARGB(255, 20, 20, 20),
+        ),
         routes: {
-          '/auth': (context) => const AuthPage(),    // edit this to point to a page
+          '/auth': (context) => const AuthPage(),
           '/register': (context) => const RegisterPage(),
-          '/dashboard': (context) => const Dashboard(),
-          '/calendar': (context) => const ICalViewer(),
+          '/': (context) => const MainWrapper()
         },
       ),
     );
