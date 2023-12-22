@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:s_hub/utils/utils.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
-import 'dart:async';
+
 
 class ICalViewer extends StatefulWidget {
   const ICalViewer({super.key});
@@ -15,8 +14,6 @@ class ICalViewer extends StatefulWidget {
 class _ICalViewerState extends State<ICalViewer> {
 
   final myController = TextEditingController();
-  bool initialized = false;
-
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
@@ -26,16 +23,6 @@ class _ICalViewerState extends State<ICalViewer> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
 
-  _ICalViewerState() {
-    setCalendar();
-    Future.delayed(const Duration(seconds: 10), () {
-      setState(() {
-        _selectedDay = DateTime(kToday.year, kToday.month , kToday.day);
-        _selectedEvents.value = _getEventsForDay(_selectedDay!);
-
-      });
-    });
-  }
 
   @override
   void initState() {
@@ -103,20 +90,6 @@ class _ICalViewerState extends State<ICalViewer> {
   @override
 
   Widget build(BuildContext context) {
-
-    // LOADING SCREEN
-    if (initialized == false) {
-      Loader.show(
-        context,
-        progressIndicator: const CircularProgressIndicator(backgroundColor: Color.fromARGB(0, 33, 149, 243), color: Colors.greenAccent,),
-        overlayColor: Colors.black26,
-      );
-
-      Future.delayed(const Duration(seconds: 10), () {
-        Loader.hide();
-      });
-      initialized = true;
-    }
 
     return Scaffold(
 

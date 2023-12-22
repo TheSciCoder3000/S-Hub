@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       initialData: null,
       child: MaterialApp(
         title: 'Flutter Demo',
-        initialRoute: '/calendar',
+        initialRoute: '/dashboard',
         theme: ThemeData(scaffoldBackgroundColor: const Color.fromARGB(0, 33, 149, 243)),
         routes: {
           '/auth': (context) => const AuthPage(),    // edit this to point to a page
@@ -44,6 +44,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-
