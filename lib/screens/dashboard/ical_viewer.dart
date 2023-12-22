@@ -23,7 +23,6 @@ class _ICalViewerState extends State<ICalViewer> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
 
-
   @override
   void initState() {
     super.initState();
@@ -145,23 +144,39 @@ class _ICalViewerState extends State<ICalViewer> {
             child: ValueListenableBuilder<List<Event>>(
               valueListenable: _selectedEvents,
               builder: (context, value, _) {
+
                 return ListView.builder(
                   itemCount: value.length,
                   itemBuilder: (context, index) {
+
+                    Color color;
+                    String summary = "";
+
+                    if (value[index].toString()[0] == '|') {
+                      color = Colors.greenAccent;
+                      String str = value[index].toString();
+                      summary = str.substring(1, str.length);
+                    } else {
+                      color = Colors.white;
+                      String str = value[index].toString();
+                      summary = str.substring(0, str.length);
+                    }
+
                     return Container(
                       margin: const EdgeInsets.symmetric(
                         horizontal: 12.0,
                         vertical: 4.0,
                       ),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white),
+                        border: Border.all(color: color),
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: ListTile(
                         onTap: () => print('${value[index]}'),
-                        title: Text('${value[index]}', style: TextStyle(color: Colors.white),),
+                        title: Text('$summary', style: TextStyle(color: Colors.white),),
                       ),
                     );
+
                   },
                 );
               },
@@ -169,11 +184,74 @@ class _ICalViewerState extends State<ICalViewer> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.greenAccent,
+        onPressed: () async {
+          var result = await _showTextInputDialog(context);
+          print(result);
+          if (result != null) {
+            setState((){
+              addEvent(_selectedDay, result[0], result[1]);
+            });
+            _selectedEvents.value = _getEventsForDay(_selectedDay!);
+          }
+
+        },
+        child: const Icon(Icons.add),
+      ),
 
     );
   }
 }
 
+final _courseController = TextEditingController();
+final _summaryController = TextEditingController();
+
+Future<List<String>?> _showTextInputDialog(BuildContext context) async {
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('New Event'),
+          content: Container(
+            color: Colors.white24,
+            height: 100,
+            child:  Column(
+              children: [
+                TextField(
+                  controller: _courseController,
+                  decoration: const InputDecoration(hintText: "Course"),
+                ),
+                TextField(
+                  controller: _summaryController,
+                  decoration: const InputDecoration(hintText: "Event Summary"),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
+              child: const Text("Cancel"),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
+              child: const Text('OK'),
+              onPressed: () {
+
+                if (_courseController.text != "" && _summaryController.text != "" ) {
+                  Navigator.pop(context, [_courseController.text, _summaryController.text]);
+                } else {
+                  Navigator.pop(context);
+                }
+
+              }
+            ),
+          ],
+        );
+      });
+}
 
 // prototype calendar generator. Used package instead
 
