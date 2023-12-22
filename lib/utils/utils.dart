@@ -43,6 +43,12 @@ setCalendar() async{
             Event("Test 1"),
             Event("Test 2"),
             Event("Test 3"),
+            Event("Test 1"),
+            Event("Test 2"),
+            Event("Test 3"),
+            Event("Test 1"),
+            Event("Test 2"),
+            Event("Test 3"),
           ]
         }
       );
