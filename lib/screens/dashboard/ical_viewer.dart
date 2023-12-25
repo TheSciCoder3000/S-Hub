@@ -173,7 +173,7 @@ class _ICalViewerState extends State<ICalViewer> {
                       ),
                       child: ListTile(
                         onTap: () => print('${value[index]}'),
-                        title: Text('$summary', style: TextStyle(color: Colors.white),),
+                        title: Text(summary, style: const TextStyle(color: Colors.white),),
                       ),
                     );
 
@@ -182,6 +182,7 @@ class _ICalViewerState extends State<ICalViewer> {
               },
             ),
           ),
+          const SizedBox(height: 30.0,)
         ],
       ),
       floatingActionButton: FloatingActionButton(
