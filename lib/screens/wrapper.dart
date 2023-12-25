@@ -48,6 +48,7 @@ class _MainWrapperState extends State<MainWrapper> {
     DateTime selectedDay = context.select<EventState, DateTime>((value) => value.selectedDay);
 
     return Scaffold(
+      extendBody: true,
       body: PageView(
         controller: _controller,
         onPageChanged: (value) => setState(() {
