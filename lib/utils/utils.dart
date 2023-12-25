@@ -37,16 +37,6 @@ setCalendar() async{
 
       // Now 'lines' contains a list of strings, where each string represents a line from the URL content
 
-      kEvents.addAll(
-        {
-          kToday: [
-            Event("Test 1"),
-            Event("Test 2"),
-            Event("Test 3"),
-          ]
-        }
-      );
-
       final ICAL = ICalendar.fromLines(lines);
       for (var dat in ICAL.data) {
 
@@ -99,6 +89,19 @@ setCalendar() async{
 
 }
 
+void addEvent(date, course, summary) {
+  if (kEvents.containsKey(date)) {
+    kEvents[date]?.add(Event('| $course  |  $summary'));
+  } else {
+    kEvents.addAll(
+        {
+          date: [
+            Event('| $course  |  $summary')
+          ],
+        }
+    );
+  }
+}
 
 /// Example events.
 ///

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:s_hub/utils/utils.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
-import 'dart:async';
+
 
 class ICalViewer extends StatefulWidget {
   const ICalViewer({super.key});
@@ -15,8 +14,6 @@ class ICalViewer extends StatefulWidget {
 class _ICalViewerState extends State<ICalViewer> {
 
   final myController = TextEditingController();
-  bool initialized = false;
-
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
@@ -25,17 +22,6 @@ class _ICalViewerState extends State<ICalViewer> {
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
-
-  _ICalViewerState() {
-    setCalendar();
-    Future.delayed(const Duration(seconds: 10), () {
-      setState(() {
-        _selectedDay = DateTime(kToday.year, kToday.month , kToday.day);
-        _selectedEvents.value = _getEventsForDay(_selectedDay!);
-
-      });
-    });
-  }
 
   @override
   void initState() {
@@ -104,20 +90,6 @@ class _ICalViewerState extends State<ICalViewer> {
 
   Widget build(BuildContext context) {
 
-    // LOADING SCREEN
-    if (initialized == false) {
-      Loader.show(
-        context,
-        progressIndicator: const CircularProgressIndicator(backgroundColor: Color.fromARGB(0, 33, 149, 243), color: Colors.greenAccent,),
-        overlayColor: Colors.black26,
-      );
-
-      Future.delayed(const Duration(seconds: 10), () {
-        Loader.hide();
-      });
-      initialized = true;
-    }
-
     return Scaffold(
 
       body:Column(
@@ -172,23 +144,39 @@ class _ICalViewerState extends State<ICalViewer> {
             child: ValueListenableBuilder<List<Event>>(
               valueListenable: _selectedEvents,
               builder: (context, value, _) {
+
                 return ListView.builder(
                   itemCount: value.length,
                   itemBuilder: (context, index) {
+
+                    Color color;
+                    String summary = "";
+
+                    if (value[index].toString()[0] == '|') {
+                      color = Colors.greenAccent;
+                      String str = value[index].toString();
+                      summary = str.substring(1, str.length);
+                    } else {
+                      color = Colors.white;
+                      String str = value[index].toString();
+                      summary = str.substring(0, str.length);
+                    }
+
                     return Container(
                       margin: const EdgeInsets.symmetric(
                         horizontal: 12.0,
                         vertical: 4.0,
                       ),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white),
+                        border: Border.all(color: color),
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: ListTile(
                         onTap: () => print('${value[index]}'),
-                        title: Text('${value[index]}', style: TextStyle(color: Colors.white),),
+                        title: Text('$summary', style: TextStyle(color: Colors.white),),
                       ),
                     );
+
                   },
                 );
               },
@@ -196,11 +184,74 @@ class _ICalViewerState extends State<ICalViewer> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.greenAccent,
+        onPressed: () async {
+          var result = await _showTextInputDialog(context);
+          print(result);
+          if (result != null) {
+            setState((){
+              addEvent(_selectedDay, result[0], result[1]);
+            });
+            _selectedEvents.value = _getEventsForDay(_selectedDay!);
+          }
+
+        },
+        child: const Icon(Icons.add),
+      ),
 
     );
   }
 }
 
+final _courseController = TextEditingController();
+final _summaryController = TextEditingController();
+
+Future<List<String>?> _showTextInputDialog(BuildContext context) async {
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('New Event'),
+          content: Container(
+            color: Colors.white24,
+            height: 100,
+            child:  Column(
+              children: [
+                TextField(
+                  controller: _courseController,
+                  decoration: const InputDecoration(hintText: "Course"),
+                ),
+                TextField(
+                  controller: _summaryController,
+                  decoration: const InputDecoration(hintText: "Event Summary"),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
+              child: const Text("Cancel"),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
+              child: const Text('OK'),
+              onPressed: () {
+
+                if (_courseController.text != "" && _summaryController.text != "" ) {
+                  Navigator.pop(context, [_courseController.text, _summaryController.text]);
+                } else {
+                  Navigator.pop(context);
+                }
+
+              }
+            ),
+          ],
+        );
+      });
+}
 
 // prototype calendar generator. Used package instead
 
