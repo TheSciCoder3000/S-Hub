@@ -5,10 +5,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:s_hub/firebase_options.dart';
 import 'package:s_hub/models/user.dart';
-import 'package:s_hub/screens/Splash.dart';
+import 'package:s_hub/screens/splash.dart';
 import 'package:s_hub/screens/auth/signin.dart';
 import 'package:s_hub/screens/wrapper.dart';
 import 'package:s_hub/utils/firebase/auth.dart';
+import 'package:provider/provider.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,14 +35,13 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 7), () {
+    Timer(const Duration(seconds: 10), () {
       setState(() {
         initializing = false;
       });
     });
   }
-
-  // This widget is the root of your application.
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -49,20 +49,34 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color.fromARGB(255, 20, 20, 20),
       ),
-      home: StreamBuilder<SUser?>(
-        stream: AuthService().user,
-        builder: (context, snapshot) {
-          if (!initializing) {
-            if (snapshot.hasData) {
-              return const MainWrapper();
+      home: MultiProvider(
+        providers: [
+          StreamProvider<SUser>(
+            create: (_) => AuthService().user, 
+            initialData: SUser(initializing: true),
+          ),
+        ],
+        child: StreamBuilder<SUser?>(
+          stream: AuthService().user,
+          builder: (context, snapshot) {
+            SUser authData = context.watch<SUser>();
+
+            if (!initializing) {
+              if (snapshot.hasData) {
+                if (authData.uid != null) {
+                  return const MainWrapper();
+                } else {
+                  return const AuthPage();
+                }
+              } else {
+                return const Splash();
+              }
             } else {
-              return const AuthPage();
+              return const Splash();
             }
-          } else {
-            return const Splash();
-          }
-        },
-      ),
+          },
+        )
+      )
     );
   }
 }

@@ -60,7 +60,6 @@ class _ICalViewerState extends State<ICalViewer> {
         _rangeStart = null; // Important to clean those
         _rangeEnd = null;
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
-        print("pressed");
       });
 
       _selectedEvents.value = _getEventsForDay(selectedDay);
@@ -173,7 +172,7 @@ class _ICalViewerState extends State<ICalViewer> {
                       ),
                       child: ListTile(
                         onTap: () => print('${value[index]}'),
-                        title: Text('$summary', style: TextStyle(color: Colors.white),),
+                        title: Text(summary, style: const TextStyle(color: Colors.white),),
                       ),
                     );
 
