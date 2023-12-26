@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:icalendar_parser/icalendar_parser.dart';
+import 'package:provider/provider.dart';
+import 'package:s_hub/models/event.dart';
+import 'package:s_hub/models/user.dart';
 import 'package:s_hub/screens/dashboard/ical_viewer.dart';
 import 'package:s_hub/screens/dashboard/index.dart';
 import 'package:s_hub/screens/settings/settings.dart';
+import 'package:s_hub/utils/firebase/db.dart';
+import 'package:s_hub/utils/utils.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -18,6 +24,20 @@ class _MainWrapperState extends State<MainWrapper> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      String? user = context.read<SUser>().uid;
+      EventState eventState = context.read<EventState>();
+
+      if (user != null) {
+        FirestoreService(uid: user).getICalLink()
+        .then((icalPath) async {
+          ICalendar? cal = await fetchCalendarData(icalPath);
+          if (cal != null) eventState.parse(cal.data);
+        });
+      }
+    });
+
     _pages = [
       const Dashboard(),
       const ICalViewer(),
@@ -29,7 +49,7 @@ class _MainWrapperState extends State<MainWrapper> {
   void navigateTo(int index) {
     setState(() {
       selectedIndex = index;
-      _controller.animateToPage(index, duration: const Duration(milliseconds: 100), curve: Curves.linear);
+      _controller.animateToPage(index, duration: const Duration(milliseconds: 200), curve: Curves.linear);
     });
   }
 
