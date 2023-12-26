@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:s_hub/screens/dashboard/ical_viewer.dart';
 import 'package:s_hub/screens/dashboard/index.dart';
+import 'package:s_hub/screens/settings/settings.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -12,15 +13,23 @@ class MainWrapper extends StatefulWidget {
 class _MainWrapperState extends State<MainWrapper> {
   int selectedIndex = 0;
   final PageController _controller = PageController();
-  final List<Widget> _pages = [
-    const Dashboard(),
-    const ICalViewer()
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const Dashboard(),
+      const ICalViewer(),
+      Container(),
+      const AppSettigs()
+    ];
+  }
 
   void navigateTo(int index) {
     setState(() {
       selectedIndex = index;
-      _controller.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.linear);
+      _controller.animateToPage(index, duration: const Duration(milliseconds: 100), curve: Curves.linear);
     });
   }
 
