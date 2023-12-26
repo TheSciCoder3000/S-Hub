@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:s_hub/firebase_options.dart';
+import 'package:s_hub/models/event.dart';
 import 'package:s_hub/models/user.dart';
 import 'package:s_hub/screens/splash.dart';
 import 'package:s_hub/screens/auth/signin.dart';
@@ -55,11 +56,15 @@ class _MyAppState extends State<MyApp> {
             create: (_) => AuthService().user, 
             initialData: SUser(initializing: true),
           ),
+          ChangeNotifierProvider<EventState>(
+            create: (context) => EventState()
+          )
         ],
         child: StreamBuilder<SUser?>(
           stream: AuthService().user,
           builder: (context, snapshot) {
             SUser authData = context.watch<SUser>();
+            context.watch<EventState>();
 
             if (!initializing) {
               if (snapshot.hasData) {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:s_hub/models/event.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:s_hub/utils/utils.dart';
 
@@ -40,7 +42,8 @@ class _ICalViewerState extends State<ICalViewer> {
 
   List<Event> _getEventsForDay(DateTime day) {
     // Implementation example
-    return kEvents[day] ?? [];
+    EventState eventState = context.read<EventState>();
+    return eventState.eventMap[day] ?? [];
   }
 
   List<Event> _getEventsForRange(DateTime start, DateTime end) {
@@ -190,7 +193,7 @@ class _ICalViewerState extends State<ICalViewer> {
           print(result);
           if (result != null) {
             setState((){
-              addEvent(_selectedDay, result[0], result[1]);
+              // addEvent(_selectedDay, result[0], result[1]);
             });
             _selectedEvents.value = _getEventsForDay(_selectedDay!);
           }
@@ -251,204 +254,3 @@ Future<List<String>?> _showTextInputDialog(BuildContext context) async {
         );
       });
 }
-
-// prototype calendar generator. Used package instead
-
-// void insertCellsToRows(row, firstRow) {
-//   int monthCount = 1;
-//   int count = 0;
-//   row.add(
-//       const SizedBox(
-//         height: 530,
-//         width: 130,
-//         child: Column(
-//           children: [
-//             Text(
-//               'JAN',
-//               style: TextStyle(fontSize: 40),
-//             )
-//           ],
-//         ),
-//       )
-//   );
-//
-//   //start calendar
-//   for (int i = 1; i <= 66; i++) {
-//
-//     if (i % 6 == 0) {
-//       if (firstRow == true) {
-//
-//         if (i > 1) {count = 0;}
-//         row.add(
-//             SizedBox(
-//               height: 530,
-//               width: 160,
-//               child: Column(
-//                 children: [
-//                   Text(
-//                     month(monthCount),
-//                     style: const TextStyle(fontSize: 40),
-//                   )
-//                 ],
-//               ),
-//             )
-//         );
-//
-//       } else {
-//         if (i > 1) {count = 0;}
-//         row.add(
-//             const SizedBox(
-//               height: 530,
-//               width: 160,
-//             )
-//         );
-//       }
-//       monthCount++;
-//
-//     } else if (firstRow == true) {
-//       if (count == 0) {
-//         count++;
-//         row.add(
-//             Container(
-//                 decoration: BoxDecoration(
-//                     border: setBorder("Top Left")
-//                 ),
-//                 height: 530,
-//                 width: 130,
-//                 child: Container(
-//                   alignment: Alignment.topLeft,
-//                   child: Text(
-//                     '$count',
-//                     style: const TextStyle(color: Colors.grey),
-//                   ),
-//                 )
-//             )
-//         );
-//       } else {
-//         count++;
-//         row.add(
-//             Container(
-//                 decoration: BoxDecoration(
-//                     border: setBorder("Top")
-//                 ),
-//                 height: 530,
-//                 width: 130,
-//                 child: Container(
-//                   alignment: Alignment.topLeft,
-//                   child: Text(
-//                     '$count',
-//                     style: const TextStyle(color: Colors.grey),
-//                   ),
-//                 )
-//             )
-//         );
-//       }
-//
-//     } else {
-//       if (count == 0) {
-//         count++;
-//         row.add(
-//             Container(
-//                 decoration: BoxDecoration(
-//                     border: setBorder("Left")
-//                 ),
-//                 height: 530,
-//                 width: 130,
-//                 child: Container(
-//                   alignment: Alignment.topLeft,
-//                   child: Text(
-//                     '$count',
-//                     style: const TextStyle(color: Colors.grey),
-//                   ),
-//                 )
-//             )
-//         );
-//       } else {
-//         count++;
-//         row.add(
-//             Container(
-//                 decoration: BoxDecoration(
-//                     border: setBorder("Center")
-//                 ),
-//                 height: 530,
-//                 width: 130,
-//                 child: Container(
-//                   alignment: Alignment.topLeft,
-//                   child: Text(
-//                     '$count',
-//                     style: const TextStyle(color: Colors.grey),
-//                   ),
-//                 )
-//             )
-//         );
-//       }
-//
-//     }
-//
-//   }
-// }
-//
-// Border setBorder(side) {
-//   Border border = const Border();
-//
-//   if (side == "Left") {
-//     border = const Border(
-//       bottom: BorderSide(color: Colors.grey),
-//       right: BorderSide(color: Colors.grey),
-//       left: BorderSide(color: Colors.grey),
-//     );
-//   } else if (side == "Top") {
-//     border = const Border(
-//       bottom: BorderSide(color: Colors.grey),
-//       right: BorderSide(color: Colors.grey),
-//       top: BorderSide(color: Colors.grey),
-//     );
-//   } else if (side == "Top Left") {
-//     border = const Border(
-//       bottom: BorderSide(color: Colors.grey),
-//       right: BorderSide(color: Colors.grey),
-//       top: BorderSide(color: Colors.grey),
-//       left: BorderSide(color: Colors.grey),
-//     );
-//   } else if (side == "Center") {
-//     border = const Border(
-//       bottom: BorderSide(color: Colors.grey),
-//       right: BorderSide(color: Colors.grey),
-//     );
-//   }
-//   return border;
-// }
-//
-// String month(numOfMonth) {
-//
-//   String returnMonth = "None";
-//
-//   switch(numOfMonth) {
-//     case 0:
-//       returnMonth = "JAN";
-//     case 1:
-//       returnMonth = "FEB";
-//     case 2:
-//       returnMonth = "MAR";
-//     case 3:
-//       returnMonth = "APR";
-//     case 4:
-//       returnMonth = "MAY";
-//     case 5:
-//       returnMonth = "JUN";
-//     case 6:
-//       returnMonth = "JUL";
-//     case 7:
-//       returnMonth = "AUG";
-//     case 8:
-//       returnMonth = "SEP";
-//     case 9:
-//       returnMonth = "OCT";
-//     case 10:
-//       returnMonth = "NOV";
-//     case 11:
-//       returnMonth = "DEC";
-//   }
-//
-//   return returnMonth;
-// }
