@@ -26,13 +26,21 @@ class Event {
 
 class EventState extends ChangeNotifier {
   bool initializing = true;
+  DateTime selectedDay = DateTime.now();
+
   LinkedHashMap<DateTime, List<Event>> eventMap 
     = LinkedHashMap<DateTime, List<Event>>(
       equals: isSameDay,
       hashCode: getHashCode,
     );
 
-  void parse(List<Map<String, dynamic>> rawData) {
+  void setSelectedDay(DateTime day) {
+    selectedDay = day;
+    notifyListeners();
+  }
+
+  void parse(List<Map<String, dynamic>> rawData, {bool ignoreEmpty = false}) {
+    if (eventMap.isNotEmpty && !ignoreEmpty) return;
     // clean data
     rawData.removeWhere((event) => 
       !event.containsKey("uid") &&
@@ -41,7 +49,7 @@ class EventState extends ChangeNotifier {
     // adding events to global state
 
     for (var dat in rawData) {
-      DateTime date = DateTime.parse(dat['dtend']);
+      DateTime date = DateUtils.dateOnly(DateTime.parse(dat['dtend']));
       IcsDateTime dtend = IcsDateTime(dt: dat['dtend']);
 
       if (eventMap.containsKey(date)) {
@@ -90,8 +98,6 @@ class EventState extends ChangeNotifier {
         key: [event],
       });
     }
-
-    // TODO: add Firebase api here
 
     notifyListeners();
   }

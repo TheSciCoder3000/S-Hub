@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:s_hub/utils/utils.dart';
@@ -57,19 +59,17 @@ class FirestoreService {
 
       await batch.commit();
     } catch (e) {
-      print(e);
+      throw Exception("Error in syncing ICalLink with firestore");
     }
   }
 
   Future<List<Map<String, dynamic>>> getAllEvents() async {
+    print("\n\nretrieving docs");
     try {
-      print("getting all events");
       QuerySnapshot doc = await usersCollection.doc(uid).collection("events").get();
-      final data = doc.docs.map((e) => e.data() as Map<String, dynamic>).toList();
-      return data;
+      return doc.docs.map((e) => e.data() as Map<String, dynamic>).toList();
     } catch (e) {
-      print(e);
-      throw Error();
+      throw Exception("Error in getting all events");
     }
   }
 
@@ -77,15 +77,22 @@ class FirestoreService {
     try {
 
     } catch (e) {
-      print(e);
+      throw Exception("Error in getting specific events");
     }
   }
 
-  Future addEvents() async {
+  Future<void> addEvent(String eventId, String summary, DateTime dtend) async {
     try {
-
+      CollectionReference eventsCollection = usersCollection.doc(uid).collection("events");
+      return await eventsCollection.doc(eventId).set({
+        "uid": eventId,
+        "summary": summary,
+        "dtend": dtend.toIso8601String(),
+        "dtstart": null
+      });
+      
     } catch (e) {
-      print(e);
+      throw Exception("Error in adding events");
     }
   }
 

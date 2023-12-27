@@ -14,7 +14,8 @@ class ICalViewer extends StatefulWidget {
 
 
 class _ICalViewerState extends State<ICalViewer> {
-
+  final courseController = TextEditingController();
+  final summaryController = TextEditingController();
   final myController = TextEditingController();
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -24,12 +25,15 @@ class _ICalViewerState extends State<ICalViewer> {
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
+  String selectedOption = "AssignmentEvent";
+
 
   @override
   void initState() {
     super.initState();
 
     _selectedDay = DateTime(kToday.year, kToday.month , kToday.day);
+    context.read<EventState>().setSelectedDay(DateTime(kToday.year, kToday.month , kToday.day));
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
 
   }
@@ -56,7 +60,10 @@ class _ICalViewerState extends State<ICalViewer> {
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    print("day is selected");
+    EventState eventState = context.read<EventState>();
+    
+    eventState.setSelectedDay(selectedDay);
+
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
@@ -90,8 +97,10 @@ class _ICalViewerState extends State<ICalViewer> {
   }
 
   @override
-
   Widget build(BuildContext context) {
+    List<Event> events = context.select<EventState, List<Event>>((value) {
+      return value.eventMap[value.selectedDay] ?? [];
+    });
 
     return Scaffold(
 
@@ -144,114 +153,46 @@ class _ICalViewerState extends State<ICalViewer> {
           ),
           const SizedBox(height: 8.0),
           Expanded(
-            child: ValueListenableBuilder<List<Event>>(
-              valueListenable: _selectedEvents,
-              builder: (context, value, _) {
+            child: ListView.builder(
+              itemCount: events.length,
+              itemBuilder: (context, index) {
+                Color color;
+                String summary = "";
 
-                return ListView.builder(
-                  itemCount: value.length,
-                  itemBuilder: (context, index) {
+                if (events[index].toString()[0] == '|') {
+                  color = Colors.greenAccent;
+                  String str = events[index].toString();
+                  summary = str.substring(1, str.length);
+                } else {
+                  color = Colors.white;
+                  String str = events[index].toString();
+                  summary = str.substring(0, str.length);
+                }
 
-                    Color color;
-                    String summary = "";
-
-                    if (value[index].toString()[0] == '|') {
-                      color = Colors.greenAccent;
-                      String str = value[index].toString();
-                      summary = str.substring(1, str.length);
-                    } else {
-                      color = Colors.white;
-                      String str = value[index].toString();
-                      summary = str.substring(0, str.length);
-                    }
-
-                    return Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 4.0,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: color),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: ListTile(
-                        onTap: () => print('${value[index]}'),
-                        title: Text(summary, style: const TextStyle(color: Colors.white),),
-                      ),
-                    );
-
-                  },
+                return Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12.0,
+                    vertical: 4.0,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: color),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: ListTile(
+                    onTap: () => print('${events[index]}'),
+                    title: Text(summary, style: const TextStyle(color: Colors.white),),
+                  ),
                 );
+
               },
-            ),
+            )
+            
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.greenAccent,
-        onPressed: () async {
-          var result = await _showTextInputDialog(context);
-          print(result);
-          if (result != null) {
-            setState((){
-              // addEvent(_selectedDay, result[0], result[1]);
-            });
-            _selectedEvents.value = _getEventsForDay(_selectedDay!);
-          }
-
-        },
-        child: const Icon(Icons.add),
-      ),
-
     );
   }
+
 }
 
-final _courseController = TextEditingController();
-final _summaryController = TextEditingController();
 
-Future<List<String>?> _showTextInputDialog(BuildContext context) async {
-  return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('New Event'),
-          content: Container(
-            color: Colors.white24,
-            height: 100,
-            child:  Column(
-              children: [
-                TextField(
-                  controller: _courseController,
-                  decoration: const InputDecoration(hintText: "Course"),
-                ),
-                TextField(
-                  controller: _summaryController,
-                  decoration: const InputDecoration(hintText: "Event Summary"),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
-              child: const Text("Cancel"),
-              onPressed: () => Navigator.pop(context),
-            ),
-            ElevatedButton(
-              style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
-              child: const Text('OK'),
-              onPressed: () {
-
-                if (_courseController.text != "" && _summaryController.text != "" ) {
-                  Navigator.pop(context, [_courseController.text, _summaryController.text]);
-                } else {
-                  Navigator.pop(context);
-                }
-
-              }
-            ),
-          ],
-        );
-      });
-}
