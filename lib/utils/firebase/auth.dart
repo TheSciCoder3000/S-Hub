@@ -5,19 +5,19 @@ import 'package:s_hub/utils/firebase/db.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  SUser? _userFromFirebaseUser(User? user) {
-    return user != null ? SUser(uid: user.uid) : null;
+  SUser _userFromFirebaseUser(User? user) {
+    return user != null ? SUser(FUser: user) : SUser(hasError: true);
   }
 
-  Stream<User?> get user {
-    // return _auth.authStateChanges()
-    //   .map(_userFromFirebaseUser);
-    return _auth.authStateChanges();
+  Stream<SUser> get user {
+    return _auth.authStateChanges()
+      .map(_userFromFirebaseUser);
+    // return _auth.authStateChanges();
   }
 
   Future<SUser?> signInWithEmail(String email, String password) async{
     UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
-    SUser? user = result.user != null ? SUser(uid: result.user!.uid) : null;
+    SUser? user = result.user != null ? SUser(FUser: result.user!) : null;
     return user;
   }
 

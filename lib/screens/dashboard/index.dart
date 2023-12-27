@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:s_hub/models/event.dart';
 import 'package:s_hub/utils/utils.dart';
 import 'package:s_hub/screens/dashboard/ical_viewer.dart';
-import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'dart:async';
 
 class Dashboard extends StatefulWidget {
@@ -15,20 +16,6 @@ class _Dashboard extends State<Dashboard> {
   late final ValueNotifier<List<Event>> _selectedEvents;
 
   DateTime? _selectedDay;
-  bool initialized = false;
-
-  _Dashboard() {
-
-    setCalendar();
-    Future.delayed(const Duration(seconds: 10), () {
-      setState(() {
-        _selectedDay = DateTime(kToday.year, kToday.month , kToday.day);
-        _selectedEvents.value = _getEventsForDay(_selectedDay!);
-
-      });
-    });
-
-  }
 
   @override
   void initState() {
@@ -47,24 +34,12 @@ class _Dashboard extends State<Dashboard> {
 
   List<Event> _getEventsForDay(DateTime day) {
     // Implementation example
-    return kEvents[day] ?? [];
+    EventState eventState = context.read<EventState>();
+    return eventState.eventMap[day] ?? [];
   }
 
   @override
   Widget build(BuildContext context) {
-
-    if (initialized == false) {
-      Loader.show(
-        context,
-        progressIndicator: const CircularProgressIndicator(backgroundColor: Color.fromARGB(0, 33, 149, 243), color: Colors.greenAccent,),
-        overlayColor: Colors.black26,
-      );
-
-      Future.delayed(const Duration(seconds: 10), () {
-        Loader.hide();
-      });
-      initialized = true;
-    }
 
     return Scaffold(
       body: Column(
@@ -147,7 +122,7 @@ class _Dashboard extends State<Dashboard> {
           print(result);
           if (result != null) {
             setState((){
-              addEvent(kToday, result[0], result[1]);
+              // addEvent(kToday, result[0], result[1]);
             });
             _selectedEvents.value = _getEventsForDay(kToday);
           }

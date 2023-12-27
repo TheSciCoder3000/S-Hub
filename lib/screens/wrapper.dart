@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:s_hub/models/event.dart';
+import 'package:s_hub/models/user.dart';
 import 'package:s_hub/screens/dashboard/ical_viewer.dart';
 import 'package:s_hub/screens/dashboard/index.dart';
+import 'package:s_hub/screens/settings/settings.dart';
+import 'package:s_hub/utils/firebase/db.dart';
+import 'package:uuid/uuid.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -10,22 +16,37 @@ class MainWrapper extends StatefulWidget {
 }
 
 class _MainWrapperState extends State<MainWrapper> {
+  final courseController = TextEditingController();
+  final summaryController = TextEditingController();
+
   int selectedIndex = 0;
   final PageController _controller = PageController();
-  final List<Widget> _pages = [
-    const Dashboard(),
-    const ICalViewer()
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _pages = [
+      const Dashboard(),
+      const ICalViewer(),
+      Container(),
+      const AppSettigs()
+    ];
+  }
 
   void navigateTo(int index) {
     setState(() {
       selectedIndex = index;
-      _controller.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.linear);
+      _controller.animateToPage(index, duration: const Duration(milliseconds: 200), curve: Curves.linear);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    String? uid = context.watch<SUser>().uid;
+    DateTime selectedDay = context.select<EventState, DateTime>((value) => value.selectedDay);
+
     return Scaffold(
       body: PageView(
         controller: _controller,
@@ -35,10 +56,33 @@ class _MainWrapperState extends State<MainWrapper> {
         children: _pages
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: const FloatingActionButton(
-        onPressed: null,
-        backgroundColor: Color.fromARGB(255, 0, 205, 109),
-        child: Icon(Icons.add),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          try {
+            EventState eventState = context.read<EventState>();
+            var result = await _showTextInputDialog(context);
+            
+            if (result != null && uid != null) {
+              var uuid = const Uuid();
+              String eventId = '${result[2]}-${uuid.v4()}';
+              String eventString = "${result[0]}: ${result[1]}";
+
+              Event newEvent = Event(
+                uid: eventId, 
+                title: eventString, 
+                summary: eventString,
+                dtend: selectedDay.toIso8601String()
+              );
+              
+              await FirestoreService(uid: uid).addEvent(newEvent.uid, newEvent.title, selectedDay);
+              eventState.addEvent(selectedDay, newEvent);
+            }
+          } catch (e) {
+            print(e);
+          }
+        },
+        backgroundColor: const Color.fromARGB(255, 0, 205, 109),
+        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomAppBar(
         elevation: 75.0,
@@ -76,6 +120,76 @@ class _MainWrapperState extends State<MainWrapper> {
           ),
         ),
       )
+    );
+  }
+
+  Future<List<String>?> _showTextInputDialog(BuildContext context) async {
+    String testOpton = "AssignmentEvent";
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 70.0, horizontal: 20.0),
+          child: Container(
+            color: Colors.white24,
+            child:  Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  children: [
+                    const Text("Add New Event", style: TextStyle(fontSize: 38.0),),
+                    const SizedBox(height: 20.0),
+                    TextField(
+                      controller: courseController,
+                      decoration: const InputDecoration(hintText: "Course"),
+                    ),
+                    TextField(
+                      controller: summaryController,
+                      decoration: const InputDecoration(hintText: "Event Summary"),
+                    ),
+                    DropdownButton(
+                      value: "AssignmentEvent",
+                      icon: const Icon(Icons.arrow_drop_down),
+                      items: const [
+                        DropdownMenuItem<String>(value: "AssignmentEvent", child: Text("Assignment")),
+                        DropdownMenuItem<String>(value: "ClassEvent", child: Text("Class Event")),
+                        DropdownMenuItem<String>(value: "LessonEvent", child: Text("Lesson")),
+                      ], 
+                      onChanged: (optionValue) {
+                        testOpton = optionValue ?? "";
+                      }
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
+                      child: const Text("Cancel"),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    ElevatedButton(
+                      style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
+                      child: const Text('OK'),
+                      onPressed: () {
+              
+                        if (courseController.text != "" && summaryController.text != "" ) {
+                          Navigator.pop(context, [courseController.text, summaryController.text, testOpton]);
+                        } else {
+                          Navigator.pop(context);
+                        }
+              
+                      }
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+      }
     );
   }
 }
