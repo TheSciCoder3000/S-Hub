@@ -56,6 +56,7 @@ class _ICalViewerState extends State<ICalViewer> {
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    print("day is selected");
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;

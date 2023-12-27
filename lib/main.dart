@@ -11,6 +11,7 @@ import 'package:s_hub/screens/auth/signin.dart';
 import 'package:s_hub/screens/wrapper.dart';
 import 'package:s_hub/utils/firebase/auth.dart';
 import 'package:provider/provider.dart';
+import 'package:s_hub/utils/firebase/db.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,13 +64,21 @@ class _MyAppState extends State<MyApp> {
         child: StreamBuilder<SUser?>(
           stream: AuthService().user,
           builder: (context, snapshot) {
-            SUser authData = context.watch<SUser>();
-            context.watch<EventState>();
+            String? userUid = context.watch<SUser>().uid;
+            EventState eventState = context.watch<EventState>();
 
             if (!initializing) {
               if (snapshot.hasData) {
-                if (authData.uid != null) {
-                  return const MainWrapper();
+                if (userUid != null) {
+                  if (!eventState.initializing) {
+                    return const MainWrapper();
+                  } else {
+                    FirestoreService(uid: userUid).getAllEvents()
+                    .then((eventList) {
+                      eventState.parse(eventList);
+                    });
+                    return const Splash();
+                  }
                 } else {
                   return const AuthPage();
                 }

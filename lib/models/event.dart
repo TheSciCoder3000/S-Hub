@@ -25,6 +25,7 @@ class Event {
 }
 
 class EventState extends ChangeNotifier {
+  bool initializing = true;
   LinkedHashMap<DateTime, List<Event>> eventMap 
     = LinkedHashMap<DateTime, List<Event>>(
       equals: isSameDay,
@@ -60,6 +61,7 @@ class EventState extends ChangeNotifier {
       }
     }
 
+    initializing = false;
     notifyListeners();
   }
 
