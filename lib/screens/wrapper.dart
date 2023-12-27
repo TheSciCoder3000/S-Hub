@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:provider/provider.dart';
 import 'package:s_hub/models/event.dart';
 import 'package:s_hub/models/user.dart';
@@ -7,7 +6,6 @@ import 'package:s_hub/screens/dashboard/ical_viewer.dart';
 import 'package:s_hub/screens/dashboard/index.dart';
 import 'package:s_hub/screens/settings/settings.dart';
 import 'package:s_hub/utils/firebase/db.dart';
-import 'package:s_hub/utils/utils.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -30,10 +28,9 @@ class _MainWrapperState extends State<MainWrapper> {
       EventState eventState = context.read<EventState>();
 
       if (user != null) {
-        FirestoreService(uid: user).getICalLink()
-        .then((icalPath) async {
-          ICalendar? cal = await fetchCalendarData(icalPath);
-          if (cal != null) eventState.parse(cal.data);
+        FirestoreService(uid: user).getAllEvents()
+        .then((eventList) {
+          eventState.parse(eventList);
         });
       }
     });

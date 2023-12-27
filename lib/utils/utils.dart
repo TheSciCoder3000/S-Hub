@@ -1,6 +1,7 @@
 // Copyright 2019 Aleksander Woźniak
 // SPDX-License-Identifier: Apache-2.0
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'dart:convert';
@@ -9,19 +10,22 @@ int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
 }
 
-Future<ICalendar?> fetchCalendarData(String icalLink) async {
+Future<List<Map<String, dynamic>>> fetchCalendarData(String icalLink) async {
   try {
     final response = await http.get(Uri.parse(icalLink));
 
     if (response.statusCode == 200) {
       final List<String> lines = LineSplitter.split(utf8.decode(response.bodyBytes)).toList();
 
-      return ICalendar.fromLines(lines);
+      ICalendar calendar = ICalendar.fromLines(lines);
+
+      return calendar.data;
+    } else {
+      throw ErrorDescription("HTTP request failed");
     }
   } catch (e) {
-    print(e);
+    throw Error();
   }
-  return null;
 }
 
 /// Returns a list of [DateTime] objects from [first] to [last], inclusive.

@@ -32,7 +32,6 @@ class EventState extends ChangeNotifier {
     );
 
   void parse(List<Map<String, dynamic>> rawData) {
-    print("parsing data");
     // clean data
     rawData.removeWhere((event) => 
       !event.containsKey("uid") &&
@@ -40,32 +39,45 @@ class EventState extends ChangeNotifier {
     
     // adding events to global state
 
-    print("adding events: ${rawData.length}");
     for (var dat in rawData) {
-      // print("parsing ${dat['uid']} and ${dat['summary']}");
-      if (dat['type'] == 'VEVENT') {
-        DateTime date = DateTime.parse(dat['dtend'].dt);
-        IcsDateTime dtend = dat['dtend'];
+      DateTime date = DateTime.parse(dat['dtend']);
+      IcsDateTime dtend = IcsDateTime(dt: dat['dtend']);
 
-        if (eventMap.containsKey(date)) {
-          eventMap[date]?.add(Event(
+      if (eventMap.containsKey(date)) {
+        eventMap[date]?.add(Event(
+          uid: dat['uid'],
+          title: dat['summary'],
+          dtend: dtend.toDateTime()?.toIso8601String()
+        ));
+      } else {
+        eventMap.addAll({
+          date: [Event(
             uid: dat['uid'],
             title: dat['summary'],
             dtend: dtend.toDateTime()?.toIso8601String()
-          ));
-        } else {
-          eventMap.addAll({
-            date: [Event(
-              uid: dat['uid'],
-              title: dat['summary'],
-              dtend: dtend.toDateTime()?.toIso8601String()
-            )]
-          });
-        }
+          )]
+        });
       }
     }
 
     notifyListeners();
+  }
+
+  List<Map<String, dynamic>> toList() {
+    List<Map<String, dynamic>> eventList = [];
+
+    for (var date in eventMap.entries) {
+      for (var event in date.value) {
+        print(event.summary);
+        eventList.add({
+          'uid': event.uid,
+          'summary': event.title,
+          'dtend': event.dtend,
+          'dtstart': event.dtstart
+        });
+      }
+    }
+    return eventList;
   }
 
   void addEvent(DateTime key, Event event) {
