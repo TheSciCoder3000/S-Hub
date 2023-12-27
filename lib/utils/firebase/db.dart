@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:icalendar_parser/icalendar_parser.dart';
+import 'package:s_hub/utils/utils.dart';
 
 class FirestoreService {
   final String uid;
@@ -25,12 +27,15 @@ class FirestoreService {
   }
 
   // ======================== EVENTS API ======================== 
-  Future syncEvents(List<Map<String, dynamic>> IcalData) async {
+  Future syncEvents() async {
     try {
+      String icalLink = await getICalLink();
+      List<Map<String, dynamic>> IcalData = await fetchCalendarData(icalLink);
+
       // clean data
       IcalData.removeWhere((event) => 
-        event.containsKey("uid") &&
-        event.containsKey("summary"));
+        !event.containsKey("uid") &&
+        !event.containsKey("summary"));
       
       // initialize firestore references
       final batch = FirebaseFirestore.instance.batch();
@@ -38,10 +43,14 @@ class FirestoreService {
       // batch write
       for (var doc in IcalData) {
         DocumentReference eventsCollection = usersCollection.doc(uid).collection("events").doc(doc["uid"]);
+
+        IcsDateTime? dtstart = doc['dtstart'];
+        IcsDateTime? dtend = doc['dtend'];
+
         batch.set(eventsCollection, {
           "uid": doc["uid"],
-          "dtstart": doc["dtstart"],
-          "dtend": doc["dtend"],
+          "dtstart": dtstart?.toDateTime()?.toIso8601String(),
+          "dtend": dtend?.toDateTime()?.toIso8601String(),
           "summary": doc["summary"],
         });
       }
@@ -52,14 +61,15 @@ class FirestoreService {
     }
   }
 
-  Future getAllEvents() async {
+  Future<List<Map<String, dynamic>>> getAllEvents() async {
     try {
+      print("getting all events");
       QuerySnapshot doc = await usersCollection.doc(uid).collection("events").get();
-      final data = doc.docs.map((e) => e.data()) as Map<String, dynamic>;
-
+      final data = doc.docs.map((e) => e.data() as Map<String, dynamic>).toList();
       return data;
     } catch (e) {
       print(e);
+      throw Error();
     }
   }
 
