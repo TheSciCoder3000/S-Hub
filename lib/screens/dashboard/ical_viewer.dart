@@ -33,8 +33,10 @@ class _ICalViewerState extends State<ICalViewer> {
     super.initState();
 
     _selectedDay = DateTime(kToday.year, kToday.month , kToday.day);
-    context.read<EventState>().setSelectedDay(DateTime(kToday.year, kToday.month , kToday.day));
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<EventState>().setSelectedDay(DateTime(kToday.year, kToday.month , kToday.day));
+    });
 
   }
 
