@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Schoolbook Hub',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color.fromARGB(255, 20, 20, 20),
       ),
