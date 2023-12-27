@@ -155,38 +155,42 @@ class _ICalViewerState extends State<ICalViewer> {
           ),
           const SizedBox(height: 8.0),
           Expanded(
-            child: ListView.builder(
-              itemCount: events.length,
-              itemBuilder: (context, index) {
-                Color color;
-                String summary = "";
-
-                if (events[index].toString()[0] == '|') {
-                  color = Colors.greenAccent;
-                  String str = events[index].toString();
-                  summary = str.substring(1, str.length);
-                } else {
-                  color = Colors.white;
-                  String str = events[index].toString();
-                  summary = str.substring(0, str.length);
-                }
-
-                return Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12.0,
-                    vertical: 4.0,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: color),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: ListTile(
-                    onTap: () => print('${events[index]}'),
-                    title: Text(summary, style: const TextStyle(color: Colors.white),),
-                  ),
-                );
-
-              },
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 50, 50, 50),
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(30),
+                  topLeft: Radius.circular(30)
+                )
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 25.0),
+              child: ListView.builder(
+                itemCount: events.length,
+                itemBuilder: (context, index) {
+                  Color color;
+                  String summary = "";
+            
+                  if (events[index].toString()[0] == '|') {
+                    color = Colors.greenAccent;
+                    String str = events[index].toString();
+                    summary = str.substring(1, str.length);
+                  } else {
+                    color = Colors.white;
+                    String str = events[index].toString();
+                    summary = str.substring(0, str.length);
+                  }
+            
+                  return Container(
+                    child: CheckboxListTile(
+                      title: Text(summary, style: const TextStyle(color: Colors.white),), 
+                      value: false, 
+                      onChanged: (bool? value) {  },
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
+                  );
+            
+                },
+              ),
             )
             
           ),

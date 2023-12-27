@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:s_hub/models/event.dart';
 import 'package:s_hub/utils/utils.dart';
-import 'package:s_hub/screens/dashboard/ical_viewer.dart';
+import 'package:s_hub/screens/calendar/ical_viewer.dart';
 import 'dart:async';
 
 class Dashboard extends StatefulWidget {
