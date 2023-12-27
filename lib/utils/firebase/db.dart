@@ -104,11 +104,29 @@ class FirestoreService {
     }
   }
 
-  Future deleteEvents() async {
+  Future<void> deleteEvent(String eventId) async {
     try {
-      
+      CollectionReference eventsCollection = usersCollection.doc(uid).collection("events");
+      return await eventsCollection.doc(eventId).delete();
     } catch (e) {
-      print(e);
+      throw Exception("Error in deleting an event");
+    }
+  }
+
+  Future<void> deleteEvents(List<String> eventIds) async {
+    try {
+      final batch = FirebaseFirestore.instance.batch();
+
+      CollectionReference eventsCollection = usersCollection.doc(uid).collection("events");
+      final query = await eventsCollection.where("uid", whereIn: eventIds).get();
+
+      for (var event in query.docs) {
+        batch.delete(event.reference);
+      }
+
+      batch.commit();
+    } catch (e) {
+      throw Exception("Error in deleting an event");
     }
   }
 }
