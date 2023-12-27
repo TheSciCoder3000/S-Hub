@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:s_hub/models/event.dart';
-import 'package:s_hub/models/user.dart';
 import 'package:s_hub/screens/dashboard/ical_viewer.dart';
 import 'package:s_hub/screens/dashboard/index.dart';
 import 'package:s_hub/screens/settings/settings.dart';
-import 'package:s_hub/utils/firebase/db.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -22,18 +18,6 @@ class _MainWrapperState extends State<MainWrapper> {
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      String? user = context.read<SUser>().uid;
-      EventState eventState = context.read<EventState>();
-
-      if (user != null) {
-        FirestoreService(uid: user).getAllEvents()
-        .then((eventList) {
-          eventState.parse(eventList);
-        });
-      }
-    });
 
     _pages = [
       const Dashboard(),
