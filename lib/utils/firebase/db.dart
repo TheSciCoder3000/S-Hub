@@ -87,7 +87,8 @@ class FirestoreService {
         "uid": eventId,
         "summary": summary,
         "dtend": dtend.toIso8601String(),
-        "dtstart": null
+        "dtstart": null,
+        "completed": false
       });
       
     } catch (e) {
