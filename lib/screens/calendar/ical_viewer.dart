@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:s_hub/models/event.dart';
+import 'package:s_hub/screens/calendar/todo_list.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:s_hub/utils/utils.dart';
 
@@ -100,10 +101,9 @@ class _ICalViewerState extends State<ICalViewer> {
 
   @override
   Widget build(BuildContext context) {
-    List<Event> events = context.select<EventState, List<Event>>((value) {
-      return value.eventMap[value.selectedDay] ?? [];
-    });
-
+    EventState eventState = context.watch<EventState>();
+    List<Event> events = eventState.eventMap[eventState.selectedDay] ?? [];
+    
     return Scaffold(
 
       body:Column(
@@ -153,7 +153,7 @@ class _ICalViewerState extends State<ICalViewer> {
               _focusedDay = focusedDay;
             },
           ),
-          const SizedBox(height: 8.0),
+          const SizedBox(height: 30.0),
           Expanded(
             child: Container(
               decoration: const BoxDecoration(
@@ -163,30 +163,27 @@ class _ICalViewerState extends State<ICalViewer> {
                   topLeft: Radius.circular(30)
                 )
               ),
-              padding: const EdgeInsets.symmetric(vertical: 25.0),
+              padding: const EdgeInsets.symmetric(vertical: 15.0),
               child: ListView.builder(
                 itemCount: events.length,
                 itemBuilder: (context, index) {
-                  Color color;
                   String summary = "";
+          
+                  Event event = events[index];
             
-                  if (events[index].toString()[0] == '|') {
-                    color = Colors.greenAccent;
-                    String str = events[index].toString();
+                  if (event.toString()[0] == '|') {
+                    String str = event.toString();
                     summary = str.substring(1, str.length);
                   } else {
-                    color = Colors.white;
-                    String str = events[index].toString();
+                    String str = event.toString();
                     summary = str.substring(0, str.length);
                   }
             
-                  return Container(
-                    child: CheckboxListTile(
-                      title: Text(summary, style: const TextStyle(color: Colors.white),), 
-                      value: false, 
-                      onChanged: (bool? value) {  },
-                      controlAffinity: ListTileControlAffinity.leading,
-                    ),
+                  return CalendarTodoList(
+                    eventId: event.uid, 
+                    summary: summary, 
+                    dtend: event.dtend,
+                    checked: event.completed,
                   );
             
                 },

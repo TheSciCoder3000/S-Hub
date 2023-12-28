@@ -11,6 +11,7 @@ class Event {
   final String? dtstart;
   final String? dtend;
   final String? summary;
+  bool completed;
 
   Event({
     required this.uid,
@@ -18,6 +19,7 @@ class Event {
     this.dtstart,
     this.dtend,
     this.summary,
+    this.completed = false
   });
 
   @override
@@ -39,11 +41,22 @@ class EventState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setEventState(DateTime key, String eventId, bool status) {
+    int? indx = eventMap[key]?.indexWhere((event) => event.uid == eventId);
+
+    if (indx != null) {
+      eventMap[key]?[indx].completed = status;
+    }
+
+    notifyListeners();
+  }
+
   void parse(List<Map<String, dynamic>> rawData, {bool ignoreEmpty = false}) {
     if (eventMap.isNotEmpty && !ignoreEmpty) return;
     // clean data
     rawData.removeWhere((event) => 
       !event.containsKey("uid") &&
+      !event.containsKey("completed") &&
       !event.containsKey("summary"));
     
     // adding events to global state
@@ -56,6 +69,7 @@ class EventState extends ChangeNotifier {
         eventMap[date]?.add(Event(
           uid: dat['uid'],
           title: dat['summary'],
+          completed: dat['completed'],
           dtend: dtend.toDateTime()?.toIso8601String()
         ));
       } else {
@@ -63,6 +77,7 @@ class EventState extends ChangeNotifier {
           date: [Event(
             uid: dat['uid'],
             title: dat['summary'],
+            completed: dat['completed'],
             dtend: dtend.toDateTime()?.toIso8601String()
           )]
         });
@@ -78,7 +93,6 @@ class EventState extends ChangeNotifier {
 
     for (var date in eventMap.entries) {
       for (var event in date.value) {
-        print(event.summary);
         eventList.add({
           'uid': event.uid,
           'summary': event.title,
@@ -98,6 +112,12 @@ class EventState extends ChangeNotifier {
         key: [event],
       });
     }
+
+    notifyListeners();
+  }
+
+  void deleteEvent(DateTime key, String eventId) {
+    eventMap[key]!.removeWhere((eventItem) => eventItem.uid == eventId);
 
     notifyListeners();
   }
