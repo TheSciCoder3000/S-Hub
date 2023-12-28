@@ -23,7 +23,6 @@ class FirestoreService {
       var data = doc.data() as Map<String, dynamic>;
       return data['ical'];
     } catch (e) {
-      print(e);
       throw Error();
     }
   }
@@ -54,6 +53,7 @@ class FirestoreService {
           "dtstart": dtstart?.toDateTime()?.toIso8601String(),
           "dtend": dtend?.toDateTime()?.toIso8601String(),
           "summary": doc["summary"],
+          "completed": false
         });
       }
 
@@ -64,7 +64,6 @@ class FirestoreService {
   }
 
   Future<List<Map<String, dynamic>>> getAllEvents() async {
-    print("\n\nretrieving docs");
     try {
       QuerySnapshot doc = await usersCollection.doc(uid).collection("events").get();
       return doc.docs.map((e) => e.data() as Map<String, dynamic>).toList();
@@ -96,11 +95,12 @@ class FirestoreService {
     }
   }
 
-  Future updateEvents() async {
+  Future<void> updateEventStatus(String eventId, bool status) async {
     try {
-      
+      CollectionReference eventsCollection = usersCollection.doc(uid).collection("events");
+      return await eventsCollection.doc(eventId).update({"completed": true});
     } catch (e) {
-      print(e);
+      throw Exception("Error in updating event status");
     }
   }
 
