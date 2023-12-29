@@ -21,7 +21,7 @@ class _AuthPageState extends State<AuthPage> {
     Navigator.pushNamed(context, "/register");
   }
 
-  void signinUser() async {
+  void signinUser(VoidCallback navigateFunc) async {
     setState(() {
       errorEmail = null;
       errorPass = null;
@@ -30,7 +30,7 @@ class _AuthPageState extends State<AuthPage> {
     try {
       SUser? user = await AuthService().signInWithEmail(email, password);
       if (user != null) {
-        Navigator.pushNamed(context, "/dashboard");
+        navigateFunc();
       } else {
         setState(() { signingIn = false; });
       }
@@ -121,7 +121,9 @@ class _AuthPageState extends State<AuthPage> {
                               borderRadius: BorderRadius.circular(30.0)
                             ),
                             child: ElevatedButton(
-                              onPressed: signingIn ? null : signinUser,
+                              onPressed: signingIn ? null : () => signinUser(() {
+                                Navigator.pushNamed(context, "/dashboard");
+                              }),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
                                 shadowColor: Colors.transparent,

@@ -59,27 +59,23 @@ class _MainWrapperState extends State<MainWrapper> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          try {
-            EventState eventState = context.read<EventState>();
-            var result = await _showTextInputDialog(context);
-            
-            if (result != null && uid != null) {
-              var uuid = const Uuid();
-              String eventId = '${result[2]}-${uuid.v4()}';
-              String eventString = "${result[0]}: ${result[1]}";
+          EventState eventState = context.read<EventState>();
+          var result = await _showTextInputDialog(context);
+          
+          if (result != null && uid != null) {
+            var uuid = const Uuid();
+            String eventId = '${result[2]}-${uuid.v4()}';
+            String eventString = "${result[0]}: ${result[1]}";
 
-              Event newEvent = Event(
-                uid: eventId, 
-                title: eventString, 
-                summary: eventString,
-                dtend: selectedDay.toIso8601String()
-              );
-              
-              await FirestoreService(uid: uid).addEvent(newEvent.uid, newEvent.title, selectedDay);
-              eventState.addEvent(selectedDay, newEvent);
-            }
-          } catch (e) {
-            print(e);
+            Event newEvent = Event(
+              uid: eventId, 
+              title: eventString, 
+              summary: eventString,
+              dtend: selectedDay.toIso8601String()
+            );
+            
+            await FirestoreService(uid: uid).addEvent(newEvent.uid, newEvent.title, selectedDay);
+            eventState.addEvent(selectedDay, newEvent);
           }
         },
         backgroundColor: const Color.fromARGB(255, 0, 205, 109),

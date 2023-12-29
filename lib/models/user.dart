@@ -8,10 +8,10 @@ class SUser {
   String? displayName;
 
   SUser({
-    User? FUser, 
+    User? userObj, 
     this.initializing = false,
     this.hasError = false,
   }) :
-    uid = FUser?.uid, 
-    displayName = FUser?.displayName;
+    uid = userObj?.uid, 
+    displayName = userObj?.displayName;
 }

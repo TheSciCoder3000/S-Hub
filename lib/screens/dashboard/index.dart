@@ -45,9 +45,7 @@ class _Dashboard extends State<Dashboard> {
       body: Column(
         children: [
           const SizedBox(height: 70.0),
-          Container(
-            child: const Text("To-Do: Today", style: TextStyle(color: Colors.white),),
-          ),
+          const Text("To-Do: Today", style: TextStyle(color: Colors.white),),
           const SizedBox(height: 20.0),
           Container(
             decoration: BoxDecoration(
@@ -86,7 +84,6 @@ class _Dashboard extends State<Dashboard> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: ListTile(
-                        onTap: () => print('${value[index]}'),
                         title: Text(summary, style: const TextStyle(color: Colors.white),),
                       ),
                     );
@@ -119,7 +116,6 @@ class _Dashboard extends State<Dashboard> {
         backgroundColor: Colors.greenAccent,
         onPressed: () async {
           var result = await _showTextInputDialog(context);
-          print(result);
           if (result != null) {
             setState((){
               // addEvent(kToday, result[0], result[1]);

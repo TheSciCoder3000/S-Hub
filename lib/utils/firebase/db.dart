@@ -31,10 +31,10 @@ class FirestoreService {
   Future syncEvents() async {
     try {
       String icalLink = await getICalLink();
-      List<Map<String, dynamic>> IcalData = await fetchCalendarData(icalLink);
+      List<Map<String, dynamic>> icalData = await fetchCalendarData(icalLink);
 
       // clean data
-      IcalData.removeWhere((event) => 
+      icalData.removeWhere((event) => 
         !event.containsKey("uid") &&
         !event.containsKey("summary"));
       
@@ -42,7 +42,7 @@ class FirestoreService {
       final batch = FirebaseFirestore.instance.batch();
 
       // batch write
-      for (var doc in IcalData) {
+      for (var doc in icalData) {
         DocumentReference eventsCollection = usersCollection.doc(uid).collection("events").doc(doc["uid"]);
 
         IcsDateTime? dtstart = doc['dtstart'];

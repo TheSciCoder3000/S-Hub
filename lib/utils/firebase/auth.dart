@@ -6,7 +6,7 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   SUser _userFromFirebaseUser(User? user) {
-    return user != null ? SUser(FUser: user) : SUser(hasError: true);
+    return user != null ? SUser(userObj: user) : SUser(hasError: true);
   }
 
   Stream<SUser> get user {
@@ -17,7 +17,7 @@ class AuthService {
 
   Future<SUser?> signInWithEmail(String email, String password) async{
     UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
-    SUser? user = result.user != null ? SUser(FUser: result.user!) : null;
+    SUser? user = result.user != null ? SUser(userObj: result.user!) : null;
     return user;
   }
 

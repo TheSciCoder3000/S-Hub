@@ -99,7 +99,6 @@ class StreamRouterState extends State<StreamRouter> {
                 return const MainWrapper();
               } else {
                 if (eventState.eventMap.isEmpty) {
-                  print("event map is empty, running async functions");
                   initializeEvents(userUid);
                 }
                 return const Splash();

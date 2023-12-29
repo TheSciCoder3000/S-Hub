@@ -22,7 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
     Navigator.pushNamed(context, "/auth");
   }
 
-  void registerUser() async {
+  void registerUser(VoidCallback navigateFunc) async {
     setState(() {
       errorEmail = null;
       registering = true;
@@ -30,12 +30,11 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
       User? user = await AuthService().registerWithEmail(email, password, icalLink);
       if (user != null) {
-        Navigator.pushNamed(context, "/dashboard");
+        navigateFunc();
       } else {
         setState(() { registering = false; });
       }
     } catch (e) {
-      print(e);
       setState(() {
         registering = false;
         if (e.toString().contains("The email address is badly formatted")) {
@@ -126,7 +125,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               borderRadius: BorderRadius.circular(30.0)
                             ),
                             child: ElevatedButton(
-                              onPressed: registering ? null : registerUser,
+                              onPressed: registering ? null : () => registerUser(() {
+                                Navigator.pushNamed(context, "/dashboard");
+                              }),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
                                 shadowColor: Colors.transparent,
