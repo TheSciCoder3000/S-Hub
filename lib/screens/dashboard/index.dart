@@ -115,21 +115,6 @@ class _Dashboard extends State<Dashboard> {
 
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.greenAccent,
-        onPressed: () async {
-          var result = await _showTextInputDialog(context);
-          print(result);
-          if (result != null) {
-            setState((){
-              // addEvent(kToday, result[0], result[1]);
-            });
-            _selectedEvents.value = _getEventsForDay(kToday);
-          }
-
-        },
-        child: const Icon(Icons.add),
-      ),
     );
   }
 
