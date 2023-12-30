@@ -36,6 +36,11 @@ class EventState extends ChangeNotifier {
       hashCode: getHashCode,
     );
 
+  void clear() {
+    eventMap.clear();
+    notifyListeners();
+  }
+
   void setSelectedDay(DateTime day) {
     selectedDay = day;
     notifyListeners();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:s_hub/models/event.dart';
 import 'package:s_hub/models/user.dart';
 import 'package:s_hub/utils/firebase/auth.dart';
 import 'package:s_hub/utils/firebase/db.dart';
@@ -37,6 +38,8 @@ class _AppSettigsState extends State<AppSettigs> {
               leading: const Icon(Icons.logout, color: Colors.white),
               tileColor: const Color.fromARGB(255, 28, 28, 28),
               onTap: () {
+                final eventState = context.read<EventState>();
+                eventState.clear();
                 AuthService().signOut();
               },
             ),
