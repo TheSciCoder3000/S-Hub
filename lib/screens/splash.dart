@@ -1,13 +1,40 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:s_hub/models/event.dart';
+import 'package:s_hub/routes/constants.dart';
+import 'package:s_hub/utils/firebase/db.dart';
 
 class Splash extends StatefulWidget {
-  const Splash({super.key});
+  const Splash({super.key, required this.uid});
+  final String? uid;
 
   @override
   State<Splash> createState() => _SplashState();
 }
 
 class _SplashState extends State<Splash> {
+
+  @override
+  void initState() {
+    super.initState();
+    Timer(const Duration(seconds: 2), () {
+      final eventState = context.read<EventState>();
+      String? user = widget.uid;
+
+      if (user == null) {
+        context.go(context.namedLocation(RoutePath.signin.name));
+      } else {
+        FirestoreService(uid: user).getAllEvents().then((events) {
+          eventState.parse(events);
+        });
+        context.go(context.namedLocation(RoutePath.dashboard.name));
+      }
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;

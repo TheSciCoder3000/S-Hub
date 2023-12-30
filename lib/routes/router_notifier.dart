@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:s_hub/models/user.dart';
@@ -17,11 +16,10 @@ class RouterNotifier extends ChangeNotifier {
 
 
   String? redirect (BuildContext context, GoRouterState state) {
-    if (user.uid == null) {
-      if (state.matchedLocation == RoutePath.dashboard.path) return RoutePath.signin.path;
-    } else {
-      return RoutePath.dashboard.path;
+    if (state.matchedLocation == RoutePath.dashboard.path && user.uid == null) {
+      return RoutePath.signin.path;
     }
+
     return state.matchedLocation;
   } 
 }

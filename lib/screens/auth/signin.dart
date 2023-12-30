@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:s_hub/models/event.dart';
 import 'package:s_hub/models/user.dart';
+import 'package:s_hub/routes/constants.dart';
 import 'package:s_hub/screens/auth/auth_field.dart';
 import 'package:s_hub/utils/firebase/auth.dart';
+import 'package:s_hub/utils/firebase/db.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -17,20 +22,25 @@ class _AuthPageState extends State<AuthPage> {
   String? errorPass;
   bool signingIn = false;
 
-  void redirectToRegister(BuildContext context) {
-    Navigator.pushNamed(context, "/register");
+  void redirectToRegister() {
+    context.go(context.namedLocation(RoutePath.register.name));
   }
 
-  void signinUser() async {
+  void signinUser(VoidCallback navigateFunc) async {
     setState(() {
       errorEmail = null;
       errorPass = null;
       signingIn = true;
     });
     try {
+      final eventState = context.read<EventState>();
       SUser? user = await AuthService().signInWithEmail(email, password);
-      if (user != null) {
-        Navigator.pushNamed(context, "/dashboard");
+      String? uid = user?.uid;
+
+      if (uid != null) {
+        final events = await FirestoreService(uid: uid).getAllEvents();
+        eventState.parse(events);
+        navigateFunc();
       } else {
         setState(() { signingIn = false; });
       }
@@ -121,7 +131,9 @@ class _AuthPageState extends State<AuthPage> {
                               borderRadius: BorderRadius.circular(30.0)
                             ),
                             child: ElevatedButton(
-                              onPressed: signingIn ? null : signinUser,
+                              onPressed: signingIn ? null : () => signinUser(() {
+                                context.go(context.namedLocation(RoutePath.dashboard.name));
+                              }),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
                                 shadowColor: Colors.transparent,
@@ -143,7 +155,7 @@ class _AuthPageState extends State<AuthPage> {
                             style: TextButton.styleFrom(
                               foregroundColor: const Color.fromARGB(255, 0, 242, 206)
                             ),
-                            onPressed: () => redirectToRegister(context), 
+                            onPressed: () => redirectToRegister(), 
                             child: const Text("register now")
                           )
                         ],

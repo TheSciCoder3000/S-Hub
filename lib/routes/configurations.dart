@@ -1,4 +1,6 @@
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:s_hub/models/user.dart';
 import 'package:s_hub/routes/constants.dart';
 import 'package:s_hub/routes/router_notifier.dart';
 import 'package:s_hub/screens/auth/register.dart';
@@ -40,7 +42,9 @@ class MyAppRouter {
         name: RoutePath.splash.name,
         path: RoutePath.splash.path,
         builder: (context, state) {
-          return const Splash();
+          SUser user = context.watch<SUser>();
+
+          return Splash(uid: user.uid);
         }
       ),
     ],
