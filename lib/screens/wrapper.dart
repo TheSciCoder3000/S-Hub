@@ -64,17 +64,24 @@ class _MainWrapperState extends State<MainWrapper> {
             
             if (result != null && uid != null) {
               var uuid = const Uuid();
-              String eventId = '${result[2]}-${uuid.v4()}';
+              String eventCategory = result[2];
+              String eventId = '$eventCategory-${uuid.v4()}';
               String eventString = "${result[0]}: ${result[1]}";
 
               Event newEvent = Event(
                 uid: eventId, 
                 title: eventString, 
+                categroy: eventCategory,
                 summary: eventString,
                 dtend: selectedDay.toIso8601String()
               );
               
-              await FirestoreService(uid: uid).addEvent(newEvent.uid, newEvent.title, selectedDay);
+              await FirestoreService(uid: uid).addEvent(
+                newEvent.uid, 
+                eventCategory, 
+                newEvent.title, 
+                selectedDay
+              );
               eventState.addEvent(selectedDay, newEvent);
             }
           } catch (e) {
