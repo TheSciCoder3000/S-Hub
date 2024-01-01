@@ -47,9 +47,11 @@ class FirestoreService {
 
         IcsDateTime? dtstart = doc['dtstart'];
         IcsDateTime? dtend = doc['dtend'];
+        String eventId = doc["uid"];
 
         batch.set(eventsCollection, {
           "uid": doc["uid"],
+          "category": eventId.split("-").first,
           "dtstart": dtstart?.toDateTime()?.toIso8601String(),
           "dtend": dtend?.toDateTime()?.toIso8601String(),
           "summary": doc["summary"],
@@ -80,12 +82,13 @@ class FirestoreService {
     }
   }
 
-  Future<void> addEvent(String eventId, String summary, DateTime dtend) async {
+  Future<void> addEvent(String eventId, String eventCategory, String summary, DateTime dtend) async {
     try {
       CollectionReference eventsCollection = usersCollection.doc(uid).collection("events");
       return await eventsCollection.doc(eventId).set({
         "uid": eventId,
         "summary": summary,
+        "category": eventCategory,
         "dtend": dtend.toIso8601String(),
         "dtstart": null,
         "completed": false

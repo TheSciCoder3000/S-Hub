@@ -12,10 +12,12 @@ class Event {
   final String? dtend;
   final String? summary;
   bool completed;
+  String categroy;
 
   Event({
     required this.uid,
     required this.title,
+    required this.categroy,
     this.dtstart,
     this.dtend,
     this.summary,
@@ -74,6 +76,7 @@ class EventState extends ChangeNotifier {
         eventMap[date]?.add(Event(
           uid: dat['uid'],
           title: dat['summary'],
+          categroy: dat['category'],
           completed: dat['completed'],
           dtend: dtend.toDateTime()?.toIso8601String()
         ));
@@ -82,6 +85,7 @@ class EventState extends ChangeNotifier {
           date: [Event(
             uid: dat['uid'],
             title: dat['summary'],
+            categroy: dat['category'],
             completed: dat['completed'],
             dtend: dtend.toDateTime()?.toIso8601String()
           )]
