@@ -102,7 +102,7 @@ class FirestoreService {
   Future<void> updateEventStatus(String eventId, bool status) async {
     try {
       CollectionReference eventsCollection = usersCollection.doc(uid).collection("events");
-      return await eventsCollection.doc(eventId).update({"completed": true});
+      return await eventsCollection.doc(eventId).update({"completed": status});
     } catch (e) {
       throw Exception("Error in updating event status");
     }
