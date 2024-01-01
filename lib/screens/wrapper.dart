@@ -4,6 +4,7 @@ import 'package:s_hub/models/event.dart';
 import 'package:s_hub/models/user.dart';
 import 'package:s_hub/screens/calendar/ical_viewer.dart';
 import 'package:s_hub/screens/dashboard/index.dart';
+import 'package:s_hub/screens/event_modal.dart';
 import 'package:s_hub/screens/settings/settings.dart';
 import 'package:s_hub/utils/firebase/db.dart';
 import 'package:uuid/uuid.dart';
@@ -16,8 +17,6 @@ class MainWrapper extends StatefulWidget {
 }
 
 class _MainWrapperState extends State<MainWrapper> {
-  final courseController = TextEditingController();
-  final summaryController = TextEditingController();
 
   int selectedIndex = 0;
   final PageController _controller = PageController();
@@ -60,7 +59,7 @@ class _MainWrapperState extends State<MainWrapper> {
         onPressed: () async {
           try {
             EventState eventState = context.read<EventState>();
-            var result = await _showTextInputDialog(context);
+            var result = await _showTextInputDialog(context, selectedDay);
             
             if (result != null && uid != null) {
               var uuid = const Uuid();
@@ -130,72 +129,13 @@ class _MainWrapperState extends State<MainWrapper> {
     );
   }
 
-  Future<List<String>?> _showTextInputDialog(BuildContext context) async {
-    String testOpton = "AssignmentEvent";
+  Future<List<String>?> _showTextInputDialog(BuildContext context, DateTime selectedDate) async {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
+      backgroundColor: const Color.fromARGB(255, 20, 20, 20),
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 70.0, horizontal: 20.0),
-          child: Container(
-            color: Colors.white24,
-            child:  Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  children: [
-                    const Text("Add New Event", style: TextStyle(fontSize: 38.0),),
-                    const SizedBox(height: 20.0),
-                    TextField(
-                      controller: courseController,
-                      decoration: const InputDecoration(hintText: "Course"),
-                    ),
-                    TextField(
-                      controller: summaryController,
-                      decoration: const InputDecoration(hintText: "Event Summary"),
-                    ),
-                    DropdownButton(
-                      value: "AssignmentEvent",
-                      icon: const Icon(Icons.arrow_drop_down),
-                      items: const [
-                        DropdownMenuItem<String>(value: "AssignmentEvent", child: Text("Assignment")),
-                        DropdownMenuItem<String>(value: "ClassEvent", child: Text("Class Event")),
-                        DropdownMenuItem<String>(value: "LessonEvent", child: Text("Lesson")),
-                      ], 
-                      onChanged: (optionValue) {
-                        testOpton = optionValue ?? "";
-                      }
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
-                      child: const Text("Cancel"),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    ElevatedButton(
-                      style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
-                      child: const Text('OK'),
-                      onPressed: () {
-              
-                        if (courseController.text != "" && summaryController.text != "" ) {
-                          Navigator.pop(context, [courseController.text, summaryController.text, testOpton]);
-                        } else {
-                          Navigator.pop(context);
-                        }
-              
-                      }
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        );
+        return CreateModal(selectedDay: selectedDate);
       }
     );
   }
