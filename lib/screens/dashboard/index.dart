@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:s_hub/models/event.dart';
 import 'package:draggable_home/draggable_home.dart';
+import 'package:s_hub/utils/utils.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -102,7 +103,7 @@ class _Dashboard extends State<Dashboard> {
 
   Widget build(BuildContext context) {
     EventState eventState = context.watch<EventState>();
-    List<Event> events = eventState.eventMap[DateTime(2023, 12 , 16)] ?? [];
+    List<Event> events = eventState.eventMap[DateTime(kToday.year, kToday.month , kToday.day)] ?? [];
 
     List<String> getCollections() {
       List<String> collection = [];
@@ -218,43 +219,39 @@ class _Dashboard extends State<Dashboard> {
           if (group == collections[index]) {count++;}
         }
 
-        if (count > 0) {
-          return GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedCollection = collections[index];
+        return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedCollection = collections[index];
 
-                });
-              },
-              child: Container(
-                color: Colors.black,
-                child: Center(
+              });
+            },
+            child: Container(
+              color: Colors.black,
+              child: Center(
 
-                  child: SizedBox(
-                    width: 170,
-                    height: 170,
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                          side: const BorderSide(
-                            color: Colors.white,
-                            width: 2.0,
-                          ),
-                          borderRadius: BorderRadius.circular(40)
+                child: SizedBox(
+                  width: 170,
+                  height: 170,
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                        side: const BorderSide(
+                          color: Colors.white,
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(40)
 
-                      ),
-                      color: Colors.black,
-                      child: ListTile(
-                        title: Text(count.toString(), style: const TextStyle(fontWeight: FontWeight.w100,fontSize: 80, color: Colors.greenAccent, fontStyle: FontStyle.italic,)),
-                        subtitle: Text(collections[index], style: const TextStyle(color: Colors.white, fontSize: 19)),
-                      ),
+                    ),
+                    color: Colors.black,
+                    child: ListTile(
+                      title: Text(count.toString(), style: const TextStyle(fontWeight: FontWeight.w100,fontSize: 80, color: Colors.greenAccent, fontStyle: FontStyle.italic,)),
+                      subtitle: Text(collections[index], style: const TextStyle(color: Colors.white, fontSize: 19)),
                     ),
                   ),
                 ),
-              )
-          );
-        } else {
-          return Container(width: 10, color: Colors.black,);
-        }
+              ),
+            )
+        );
 
 
       }
@@ -267,7 +264,7 @@ class _Dashboard extends State<Dashboard> {
     return ListView.builder(
       padding: const EdgeInsets.only(top: 0),
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: _getEventsForDay(DateTime(2023, 12 , 16)).length,
+      itemCount: _getEventsForDay(DateTime(kToday.year, kToday.month , kToday.day)).length,
       shrinkWrap: true,
       itemBuilder: (context, index) {
 
