@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:s_hub/models/event.dart';
 import 'package:draggable_home/draggable_home.dart';
-import 'dart:async';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -224,7 +223,7 @@ class _Dashboard extends State<Dashboard> {
               onTap: () {
                 setState(() {
                   _selectedCollection = collections[index];
-                  print("tapped");
+
                 });
               },
               child: Container(
@@ -276,8 +275,6 @@ class _Dashboard extends State<Dashboard> {
         String title = event.title.substring(0, event.title.indexOf(':'));
         String summary = event.title.substring(event.title.indexOf(':') + 2, event.title.length);
 
-        print("$_selectedCollection | $title");
-
         if (title == _selectedCollection) {
           return Card(
             color: Colors.black,
@@ -305,53 +302,4 @@ class _Dashboard extends State<Dashboard> {
     );
   }
 
-}
-
-final _courseController = TextEditingController();
-final _summaryController = TextEditingController();
-
-Future<List<String>?> _showTextInputDialog(BuildContext context) async {
-  return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('New Event'),
-          content: Container(
-            color: Colors.white38,
-            height: 100,
-            child:  Column(
-              children: [
-                TextField(
-                  controller: _courseController,
-                  decoration: const InputDecoration(hintText: "Course"),
-                ),
-                TextField(
-                  controller: _summaryController,
-                  decoration: const InputDecoration(hintText: "Event Summary"),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
-              child: const Text("Cancel"),
-              onPressed: () => Navigator.pop(context),
-            ),
-            ElevatedButton(
-                style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.greenAccent)),
-                child: const Text('OK'),
-                onPressed: () {
-
-                  if (_courseController.text != "" && _summaryController.text != "" ) {
-                    Navigator.pop(context, [_courseController.text, _summaryController.text]);
-                  } else {
-                    Navigator.pop(context);
-                  }
-
-                }
-            ),
-          ],
-        );
-      });
 }
