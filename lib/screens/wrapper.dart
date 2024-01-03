@@ -45,8 +45,10 @@ class _MainWrapperState extends State<MainWrapper> {
   Widget build(BuildContext context) {
     String? uid = context.watch<SUser>().uid;
     DateTime selectedDay = context.select<EventState, DateTime>((value) => value.selectedDay);
-
+    const double iconSize = 25.0;
+    
     return Scaffold(
+      extendBody: true,
       body: PageView(
         controller: _controller,
         onPageChanged: (value) => setState(() {
@@ -92,36 +94,38 @@ class _MainWrapperState extends State<MainWrapper> {
         child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomAppBar(
+        height: 63.0,
         elevation: 75.0,
         notchMargin: 7.0,
         shadowColor: const Color.fromARGB(255, 255, 255, 255),
         shape: const CircularNotchedRectangle(),
         color: const Color.fromARGB(255, 15, 44, 29),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5.0),
+          padding: const EdgeInsets.symmetric(vertical: 0.0),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               NavButton(
                 selected: selectedIndex == 0,
                 onPressed: () => navigateTo(0), 
-                icon: const Icon(Icons.dashboard, size: 30.0,)
+                icon: const Icon(Icons.dashboard, size: iconSize,)
               ),
               NavButton(
                 selected: selectedIndex == 1,
                 onPressed: () => navigateTo(1), 
-                icon: const Icon(Icons.calendar_month, size: 30.0,)
+                icon: const Icon(Icons.calendar_month, size: iconSize,)
               ),
               const SizedBox(width: 30.0),
               NavButton(
                 selected: selectedIndex == 2,
                 onPressed: () => navigateTo(2), 
-                icon: const Icon(Icons.info, size: 30.0,)
+                icon: const Icon(Icons.info, size: iconSize,)
               ),
               NavButton(
                 selected: selectedIndex == 3,
                 onPressed: () => navigateTo(3), 
-                icon: const Icon(Icons.settings, size: 30.0,)
+                icon: const Icon(Icons.settings, size: iconSize,)
               ),
             ],
           ),
