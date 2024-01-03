@@ -142,7 +142,7 @@ class _AuthPageState extends State<AuthPage> {
                                 ),
                                 minimumSize: const Size(double.infinity, 45.0)
                               ),
-                              child: const Text("Sign In"),
+                              child: const Text("Sign In", style: TextStyle(color: Colors.white)),
                             ),
                           ),
                         ],

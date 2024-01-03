@@ -177,7 +177,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                   minimumSize: const Size(double.infinity, 45.0)
                                 ),
-                                child: const Text("Register"),
+                                child: const Text("Register", style: TextStyle(color: Colors.white)),
                               ),
                             ),
                           ],
