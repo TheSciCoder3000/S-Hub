@@ -43,9 +43,7 @@ class _MyAppState extends State<MyApp> {
       ],
       child: MaterialApp.router(
         title: 'Schoolbook Hub',
-        theme: ThemeData(
-          scaffoldBackgroundColor: const Color.fromARGB(255, 20, 20, 20),
-        ),
+        theme: ThemeData.dark(),
         routerConfig: appRouter.router,
       )
     );

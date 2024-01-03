@@ -56,6 +56,7 @@ class _MainWrapperState extends State<MainWrapper> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)),
         onPressed: () async {
           try {
             EventState eventState = context.read<EventState>();
@@ -95,7 +96,7 @@ class _MainWrapperState extends State<MainWrapper> {
         notchMargin: 7.0,
         shadowColor: const Color.fromARGB(255, 255, 255, 255),
         shape: const CircularNotchedRectangle(),
-        color: const Color.fromARGB(255, 28, 49, 38),
+        color: const Color.fromARGB(255, 15, 44, 29),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 5.0),
           child: Row(
