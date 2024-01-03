@@ -38,7 +38,7 @@ class _CreateModalState extends State<CreateModal> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 70.0, horizontal: 20.0),
       child: Container(
-        color: const Color.fromARGB(255, 20, 20, 20),
+        color: Colors.transparent,
         child:  Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
