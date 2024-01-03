@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:s_hub/models/event.dart';
 import 'package:draggable_home/draggable_home.dart';
-import 'package:s_hub/utils/utils.dart';
+import 'package:s_hub/screens/dashboard/card_collection.dart';
+import 'package:s_hub/screens/dashboard/todo_item.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -13,7 +16,8 @@ class Dashboard extends StatefulWidget {
 
 class _Dashboard extends State<Dashboard> {
 
-  String _selectedCollection = "Assignment due";
+  String _selectedCollection = "All";
+
 
   List<Event> _getEventsForDay(DateTime day) {
     // Implementation example
@@ -22,99 +26,27 @@ class _Dashboard extends State<Dashboard> {
   }
 
   @override
-  // Widget build(BuildContext context) {
-  //
-  //   return Scaffold(
-  //     body: Column(
-  //       children: [
-  //         const SizedBox(height: 70.0),
-  //         Container(
-  //           child: const Text("To-Do: Today", style: TextStyle(color: Colors.white),),
-  //         ),
-  //         const SizedBox(height: 20.0),
-  //         Container(
-  //           decoration: BoxDecoration(
-  //               shape: BoxShape.rectangle,
-  //               border: Border.all(color: Colors.white),
-  //               borderRadius: BorderRadius.circular(12.0)
-  //           ),
-  //           height: 400,
-  //           child: ValueListenableBuilder<List<Event>>(
-  //             valueListenable: _selectedEvents,
-  //             builder: (context, value, _) {
-  //               return ListView.builder(
-  //                 itemCount: value.length,
-  //                 itemBuilder: (context, index) {
-  //
-  //                   Color color;
-  //                   String summary = "";
-  //
-  //                   if (value[index].toString()[0] == '|') {
-  //                     color = Colors.greenAccent;
-  //                     String str = value[index].toString();
-  //                     summary = str.substring(1, str.length);
-  //                   } else {
-  //                     color = Colors.white;
-  //                     String str = value[index].toString();
-  //                     summary = str.substring(0, str.length);
-  //                   }
-  //
-  //                   return Container(
-  //                     margin: const EdgeInsets.symmetric(
-  //                       horizontal: 12.0,
-  //                       vertical: 4.0,
-  //                     ),
-  //                     decoration: BoxDecoration(
-  //                       border: Border.all(color: color),
-  //                       borderRadius: BorderRadius.circular(12.0),
-  //                     ),
-  //                     child: ListTile(
-  //                       onTap: () => print('${value[index]}'),
-  //                       title: Text(summary, style: const TextStyle(color: Colors.white),),
-  //                     ),
-  //                   );
-  //
-  //                 },
-  //               );
-  //             },
-  //           ),
-  //         ),
-  //         const SizedBox(height: 5.0),
-  //         TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context)
-  //                   .push(MaterialPageRoute(
-  //                 builder: (context) => const ICalViewer(),
-  //               ))
-  //                 .then((value) {
-  //                 setState(() {
-  //                   _selectedDay = DateTime(kToday.year, kToday.month , kToday.day);
-  //                   _selectedEvents.value = _getEventsForDay(_selectedDay!);
-  //                 });
-  //               });
-  //             },
-  //             child: const Text('Full Calendar', style: TextStyle(color: Colors.greenAccent),)
-  //         ),
-  //
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget build(BuildContext context) {
     EventState eventState = context.watch<EventState>();
-    List<Event> events = eventState.eventMap[DateTime(kToday.year, kToday.month , kToday.day)] ?? [];
+    DateTime selectedDay = eventState.selectedDay;
+    List<Event> events = eventState.eventMap[selectedDay] ?? [];
+    List<Event> totalEvents = [];
+    DateFormat format = DateFormat("MMMM dd, yyyy");
+
+
+    for (var event in eventState.eventMap.values) {
+      totalEvents.addAll(event);
+    }
 
     List<String> getCollections() {
-      List<String> collection = [];
+      List<String> collection = ["All", "Unfinished", "Completed"];
+      List<Event>? nowEvents = eventState.eventMap[selectedDay];
 
-      for (DateTime key in eventState.eventMap.keys) {
-        for (final e in eventState.eventMap[key] ?? []) {
-          String title = e.title;
+      if (nowEvents == null) return [];
 
-          if (collection.contains(title.substring(0, title.indexOf(':'))) == false) {
-            collection.add(title.substring(0, title.indexOf(':')));
-          }
+      for (var event in nowEvents) {
+        if (!collection.contains(event.categroy)) {
+          collection.add(event.categroy);
         }
       }
 
@@ -122,177 +54,164 @@ class _Dashboard extends State<Dashboard> {
     }
 
     return DraggableHome(
-      leading: const Icon(Icons.arrow_back_ios),
-      title: const Text("Draggable Home"),
-      // expandedBody: maximizedWidget(),
+      headerExpandedHeight: 0.55,
+      title: const Text("Todo List"),
       actions: [
+        // TODO: add event handler here
         IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
       ],
-      headerWidget: headerWidget(getCollections(), events),
+      headerWidget: headerWidget(
+        context, 
+        getCollections(), 
+        events,
+        totalEvents
+      ),
       body: [
-        const Text("EVENTS FOR TODAY", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),),
+        Text(
+          DateUtils.dateOnly(selectedDay) == DateUtils.dateOnly(DateTime.now()) ? "EVENTS FOR TODAY" : format.format(selectedDay), 
+          style: const TextStyle(
+            color: Colors.white, 
+            fontWeight: FontWeight.bold, 
+            fontStyle: FontStyle.italic
+          ),
+        ),
         listView(events),
       ],
       backgroundColor: const Color.fromARGB(255, 50, 50, 50),
-      appBarColor: Colors.black,
+      appBarColor: const Color.fromARGB(255, 0, 221, 103),
     );
   }
 
-  // Container maximizedWidget() {
-  //   return Container(
-  //     color: Colors.black,
-  //     child: Column(
-  //       children: [
-  //         const SizedBox(height: 70.0),
-  //         Container(
-  //           color: Colors.black,
-  //           child: const Text("To-Do: Today", style: TextStyle(color: Colors.white),),
-  //         ),
-  //         const SizedBox(height: 20.0),
-  //         Container(
-  //           decoration: BoxDecoration(
-  //               color: Colors.black,
-  //               shape: BoxShape.rectangle,
-  //               border: Border.all(color: Colors.white),
-  //               borderRadius: BorderRadius.circular(12.0)
-  //           ),
-  //           height: 500,
-  //           child: ValueListenableBuilder<List<Event>>(
-  //             valueListenable: _selectedEvents,
-  //             builder: (context, value, _) {
-  //               return ListView.builder(
-  //                 itemCount: value.length,
-  //                 itemBuilder: (context, index) {
-  //
-  //                   Color color;
-  //                   String summary = "";
-  //
-  //                   if (value[index].toString()[0] == '|') {
-  //                     color = Colors.greenAccent;
-  //                     String str = value[index].toString();
-  //                     summary = str.substring(1, str.length);
-  //                   } else {
-  //                     color = Colors.white;
-  //                     String str = value[index].toString();
-  //                     summary = str.substring(0, str.length);
-  //                   }
-  //
-  //                   return Container(
-  //                     margin: const EdgeInsets.symmetric(
-  //                       horizontal: 12.0,
-  //                       vertical: 4.0,
-  //                     ),
-  //                     decoration: BoxDecoration(
-  //                       border: Border.all(color: color),
-  //                       borderRadius: BorderRadius.circular(12.0),
-  //                     ),
-  //                     child: ListTile(
-  //                       onTap: () => print('${value[index]}'),
-  //                       title: Text(summary, style: const TextStyle(color: Colors.white),),
-  //                     ),
-  //                   );
-  //
-  //                 },
-  //               );
-  //             },
-  //           ),
-  //         ),
-  //
-  //       ],
-  //     ),
-  //   );
-  // }
+
+  Widget headerWidget(BuildContext context, List<String> collections, List<Event> nowEvents, List<Event> allEvents) {
+    double width = MediaQuery.of(context).size.width;
+    final controller = PageController(viewportFraction: 0.9, keepPage: true);
+
+    return Container(
+      width: width,
+      height: 640,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(0.99, -0.10),
+          end: Alignment(-0.99, 0.1),
+          colors: [Color.fromARGB(255, 0, 169, 149), Color.fromARGB(255, 0, 211, 98)],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 40.0),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20.0, 0, 0, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Welcome back", style: TextStyle(fontSize: 18.0, color: Colors.white)),
+                Text("John Juvi De Villa", style: TextStyle(fontSize: 30.0, color: Colors.white)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10.0),
+          Expanded(
+            child: PageView.builder(
+              controller: controller,
+              itemCount: collections.length,
+              onPageChanged: (indx) {
+                setState(() {
+                  _selectedCollection = collections[indx];
+                });
+              },
+              itemBuilder: (context, indx) {
+                final String collection = collections[indx];
+                int tasks = 0;
+                int totalTasks = 0;
+                Color percentColor = Colors.green;
+                Color containerColor = Colors.redAccent;
+
+                switch (collection) {
+                  case "All":
+                    tasks = allEvents.where((event) => event.completed).length;
+                    totalTasks = allEvents.length;
+                    break;
+                  case "Unfinished":
+                    tasks = nowEvents.where((event) => !event.completed).length;
+                    totalTasks = nowEvents.length;
+                    percentColor = Colors.redAccent;
+                    containerColor = Colors.green;
+                    break;
+                  case "Completed":
+                    tasks = nowEvents.where((event) => event.completed).length;
+                    totalTasks = nowEvents.length;
+                    break;
+                  default:
+                    tasks = nowEvents.where((event) => event.categroy == collection && event.completed).length;
+                    totalTasks = nowEvents.where((event) => event.categroy == collection).length;
+                }
 
 
-  Widget headerWidget(collections, events) {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: collections.length,
-      itemBuilder: (context, index) {
-
-        int count = 0;
-
-        for (final i in events) {
-
-          String group = i.title.substring(0, i.title.indexOf(':'));
-
-          if (group == collections[index]) {count++;}
-        }
-
-        return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedCollection = collections[index];
-
-              });
-            },
-            child: Container(
-              color: Colors.black,
-              child: Center(
-
-                child: SizedBox(
-                  width: 170,
-                  height: 170,
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                        side: const BorderSide(
-                          color: Colors.white,
-                          width: 2.0,
-                        ),
-                        borderRadius: BorderRadius.circular(40)
-
-                    ),
-                    color: Colors.black,
-                    child: ListTile(
-                      title: Text(count.toString(), style: const TextStyle(fontWeight: FontWeight.w100,fontSize: 80, color: Colors.greenAccent, fontStyle: FontStyle.italic,)),
-                      subtitle: Text(collections[index], style: const TextStyle(color: Colors.white, fontSize: 19)),
-                    ),
-                  ),
-                ),
+                return CardCollection(
+                  name: collection,
+                  totalTasks: totalTasks,
+                  countTasks: tasks, 
+                  percentColor: percentColor, 
+                  containerColor: containerColor,
+                );
+              }, 
+            ),
+          ),
+          const SizedBox(height: 20.0,),
+          Center(
+            child: SmoothPageIndicator(
+              controller: controller, 
+              count: collections.length,
+              effect: const WormEffect(
+                dotColor: Color.fromARGB(81, 119, 119, 119),
+                activeDotColor: Color.fromARGB(255, 0, 211, 180)
               ),
-            )
-        );
-
-
-      }
+            ),
+          ),
+          const SizedBox(height: 40.0,),
+        ],
+      )
     );
   }
 
 
-  ListView listView(events) {
+  ListView listView(List<Event> events) {
+    List<Event> eventsView = [];
+
+    switch (_selectedCollection) {
+      case "All":
+        eventsView = events;
+        break;
+      case "Unfinished":
+        eventsView = events.where((event) => !event.completed).toList();
+        break;
+      case "Completed":
+        eventsView = events.where((event) => event.completed).toList();
+        break;
+      default:
+        eventsView = events.where((event) => event.categroy == _selectedCollection).toList();
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.only(top: 0),
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: _getEventsForDay(DateTime(kToday.year, kToday.month , kToday.day)).length,
+      itemCount: eventsView.length,
       shrinkWrap: true,
       itemBuilder: (context, index) {
 
-        Event event = events[index];
+        Event event = eventsView[index];
         String title = event.title.substring(0, event.title.indexOf(':'));
         String summary = event.title.substring(event.title.indexOf(':') + 2, event.title.length);
 
-        if (title == _selectedCollection) {
-          return Card(
-            color: Colors.black,
-            child: ListTile(
-              leading: const CircleAvatar(
-                backgroundColor: Colors.greenAccent,
-                radius: 10,
-              ),
-              title: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),),
-              subtitle: Row(
-                children: [
-                  const SizedBox(width: 13),
-                  Flexible(child: Text(summary, style: const TextStyle(color: Colors.white),))
-                ],
-              ),
-              minVerticalPadding: 15,
-            ),
-          );
-        } else {
-          return const SizedBox(height: 1);
-        }
+        return TodoItem(
+          eventId: event.uid,
+          checked: event.completed,
+          dtend: event.dtend,
+          title: title,
+          summary: summary
+        );
 
 
       }

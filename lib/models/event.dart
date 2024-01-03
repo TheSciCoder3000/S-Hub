@@ -30,7 +30,7 @@ class Event {
 
 class EventState extends ChangeNotifier {
   bool initializing = true;
-  DateTime selectedDay = DateTime.now();
+  DateTime selectedDay = DateUtils.dateOnly(DateTime.now());
 
   LinkedHashMap<DateTime, List<Event>> eventMap 
     = LinkedHashMap<DateTime, List<Event>>(

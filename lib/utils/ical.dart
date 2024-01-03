@@ -1,7 +1,7 @@
 enum EventCategories {
   assignmentEvent("AssignmentEvent", "Assignment"),
   classEvent("ClassEvent", "Class Event"),
-  lessonEvent("LesonEvent", "Lesson Event"),
+  lessonEvent("LessonEvent", "Lesson Event"),
   classFinishEvent("ClassFinishEvent", "Class Finish"),
   classStartEvent("ClassStartEvent", "Class Start");
 
