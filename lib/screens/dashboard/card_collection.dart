@@ -60,7 +60,7 @@ class CardCollection extends StatelessWidget {
                   color: const Color.fromARGB(100, 125, 125, 125)
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(6.0),
                   child: child,
                 ),
               ),
@@ -78,19 +78,21 @@ class CardCollection extends StatelessWidget {
     return cardContainer(
       width: width,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CircularPercentIndicator(
-            radius: 80.0,
-            startAngle: 140,
-            percent: countTasks / totalTasks,
-            lineWidth: 10,
-            center: Text(getContainerName(name), style: const TextStyle(fontSize: 20.0)),
-            progressColor: percentColor,
-            backgroundColor: containerColor,
+          Flexible(
+            child: CircularPercentIndicator(
+              radius: width*(0.185),
+              startAngle: 140,
+              percent: countTasks / totalTasks,
+              lineWidth: 10,
+              center: Text(getContainerName(name), style: const TextStyle(fontSize: 20.0)),
+              progressColor: percentColor,
+              backgroundColor: containerColor,
+            ),
           ),
-          const SizedBox(width: 15.0),
+          // const SizedBox(width: 15.0),
           Flexible(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
