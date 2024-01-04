@@ -39,15 +39,20 @@ class _Dashboard extends State<Dashboard> {
     }
 
     List<String> getCollections() {
-      List<String> collection = ["All", "Unfinished", "Completed"];
+      List<String> collection = [];
       List<Event>? nowEvents = eventState.eventMap[selectedDay];
 
-      if (nowEvents == null) return [];
+      if (nowEvents == null) return ["All"];
 
-      for (var event in nowEvents) {
-        if (!collection.contains(event.categroy)) {
-          collection.add(event.categroy);
+      if (nowEvents.isNotEmpty) {
+        collection = ["All", "Unfinished", "Completed"];
+        for (var event in nowEvents) {
+          if (!collection.contains(event.categroy)) {
+            collection.add(event.categroy);
+          }
         }
+      } else {
+        collection = ["All"];
       }
 
       return collection;
@@ -168,6 +173,13 @@ class _Dashboard extends State<Dashboard> {
                 dotColor: Color.fromARGB(81, 119, 119, 119),
                 activeDotColor: Color.fromARGB(255, 0, 211, 180)
               ),
+              onDotClicked: (indx) {
+                controller.animateToPage(
+                  indx, 
+                  duration: const Duration(milliseconds: 400), 
+                  curve: Curves.linear
+                );
+              },
             ),
           ),
           const SizedBox(height: 40.0,),
@@ -177,7 +189,7 @@ class _Dashboard extends State<Dashboard> {
   }
 
 
-  ListView listView(List<Event> events) {
+  Widget listView(List<Event> events) {
     List<Event> eventsView = [];
 
     switch (_selectedCollection) {
@@ -192,6 +204,13 @@ class _Dashboard extends State<Dashboard> {
         break;
       default:
         eventsView = events.where((event) => event.categroy == _selectedCollection).toList();
+    }
+
+    if (eventsView.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.fromLTRB(0, 20.0, 0, 0),
+        child: Text("No events for this day", style: TextStyle(fontSize: 12.5, color: Colors.grey)),
+      );
     }
 
     return ListView.builder(
