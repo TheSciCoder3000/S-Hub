@@ -101,7 +101,9 @@ class CardCollection extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(countTasks.toString(), style: const TextStyle(fontSize: 30.0)),
+                    Flexible(
+                      child: Text(countTasks.toString(), style: const TextStyle(fontSize: 30.0)),
+                    ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 7.0),
                       child: Text(

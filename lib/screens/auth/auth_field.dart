@@ -28,12 +28,13 @@ class AuthField extends StatelessWidget {
           keyboardType: TextInputType.emailAddress,
           onChanged: onChange,
           style: const TextStyle(
-            fontSize: 13.0
+            fontSize: 13.0,
+            color: Colors.black
           ),
           decoration: InputDecoration(
             prefixIcon: Padding(
               padding: const EdgeInsets.fromLTRB(25.0, 0, 20.0, 0),
-              child: Icon(icon ?? Icons.person),
+              child: Icon(icon ?? Icons.person, color: Colors.black,),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
             hintStyle: const TextStyle(

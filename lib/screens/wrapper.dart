@@ -6,6 +6,7 @@ import 'package:s_hub/screens/calendar/ical_viewer.dart';
 import 'package:s_hub/screens/dashboard/index.dart';
 import 'package:s_hub/screens/event_modal.dart';
 import 'package:s_hub/screens/settings/settings.dart';
+import 'package:s_hub/screens/about/about_us.dart';
 import 'package:s_hub/utils/firebase/db.dart';
 import 'package:uuid/uuid.dart';
 
@@ -29,7 +30,7 @@ class _MainWrapperState extends State<MainWrapper> {
     _pages = [
       const Dashboard(),
       const ICalViewer(),
-      Container(),
+      const AboutUs(),
       const AppSettigs()
     ];
   }
