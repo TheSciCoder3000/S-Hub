@@ -19,6 +19,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String email = "";
   String password = "";
   String icalLink = "";
+  String name = "";
   String? errorEmail;
   String? errorPass;
   bool registering = false;
@@ -39,7 +40,7 @@ class _RegisterPageState extends State<RegisterPage> {
       registering = true;
     });
     try {
-      User? user = await AuthService().registerWithEmail(email, password, icalLink);
+      User? user = await AuthService().registerWithEmail(email, name, password, icalLink);
       if (user != null) {
         await FirestoreService(uid: user.uid).syncEvents();
         final events =  await FirestoreService(uid: user.uid).getAllEvents();
@@ -123,6 +124,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                 final isEmailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value!);
                                 if (!isEmailValid) {
                                   return "Please enter a valid email";
+                                }
+
+                                return null;
+                              },
+                            ),
+                            AuthField(
+                              hintText: "Full name",
+                              onChange: (value) => setState(() { name = value; }),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Please enter your full name";
                                 }
 
                                 return null;

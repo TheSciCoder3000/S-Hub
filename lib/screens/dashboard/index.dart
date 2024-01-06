@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:s_hub/models/event.dart';
 import 'package:draggable_home/draggable_home.dart';
+import 'package:s_hub/models/user.dart';
 import 'package:s_hub/screens/dashboard/card_collection.dart';
 import 'package:s_hub/screens/dashboard/todo_item.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -91,6 +92,7 @@ class _Dashboard extends State<Dashboard> {
   Widget headerWidget(BuildContext context, List<String> collections, List<Event> nowEvents, List<Event> allEvents) {
     double width = MediaQuery.of(context).size.width;
     final controller = PageController(viewportFraction: 0.9, keepPage: true);
+    final user = context.watch<SUser>();
 
     return Container(
       width: width,
@@ -106,13 +108,13 @@ class _Dashboard extends State<Dashboard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 40.0),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20.0, 0, 0, 0),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20.0, 0, 0, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Welcome back", style: TextStyle(fontSize: 18.0, color: Colors.white)),
-                Text("John Juvi De Villa", style: TextStyle(fontSize: 30.0, color: Colors.white)),
+                const Text("Welcome back", style: TextStyle(fontSize: 18.0, color: Colors.white)),
+                Text(user.displayName, style: const TextStyle(fontSize: 30.0, color: Colors.white)),
               ],
             ),
           ),

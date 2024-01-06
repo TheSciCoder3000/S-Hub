@@ -21,13 +21,15 @@ class AuthService {
     return user;
   }
 
-  Future<User?> registerWithEmail(String email, String password, String icalLink) async{
+  Future<User?> registerWithEmail(String email, String username, String password, String icalLink) async{
     return _auth.createUserWithEmailAndPassword(email: email, password: password)
       .then((creds) async {
-        final String? uid = creds.user?.uid;
-        if (uid != null) {
-          await FirestoreService(uid: uid).createUserEntry(icalLink);
-        }
+        final rawUser = creds.user;
+        if (rawUser == null) return null;
+        await rawUser.updateDisplayName(username);
+        final String uid = rawUser.uid;
+
+        await FirestoreService(uid: uid).createUserEntry(icalLink);
 
         return creds.user;
       });

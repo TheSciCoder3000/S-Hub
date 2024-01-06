@@ -5,7 +5,7 @@ class SUser {
   String? uid;
   bool initializing;
   bool hasError;
-  String? displayName;
+  String displayName;
 
   SUser({
     User? FUser, 
@@ -13,5 +13,5 @@ class SUser {
     this.hasError = false,
   }) :
     uid = FUser?.uid, 
-    displayName = FUser?.displayName;
+    displayName = FUser?.displayName ?? "Master";
 }
